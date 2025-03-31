@@ -1,0 +1,7 @@
+root = false
+
+[*.cs]
+
+# Until it breaks in someone else's workflows, I'm going to keep this off.
+# This works in both VSC and the dotnet CLI.
+dotnet_diagnostic.RS1038.severity = none # This compiler extension should not be implemented in an assembly containing a reference to Microsoft.CodeAnalysis.Workspaces. The Microsoft.CodeAnalysis.Workspaces assembly is not provided during command line compilation scenarios, so references to it could cause the compiler extension to behave unpredictably.

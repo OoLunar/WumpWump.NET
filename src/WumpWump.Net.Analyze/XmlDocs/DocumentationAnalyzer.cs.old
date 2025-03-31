@@ -1,0 +1,157 @@
+using System;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Text;
+using System.Xml.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+
+namespace WumpWump.Net.Analyze
+{
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class DocumentationAnalyzer : DiagnosticAnalyzer
+    {
+        public const string DiagnosticId = "WL0006";
+        private const string Category = "Documentation";
+
+        private static readonly DiagnosticDescriptor Rule = new(
+            DiagnosticId,
+            "Invalid documentation format",
+            "Documentation error: {0}",
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true);
+
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+            context.EnableConcurrentExecution();
+            context.RegisterSyntaxNodeAction(AnalyzeDocumentation, SyntaxKind.SingleLineDocumentationCommentTrivia);
+            context.RegisterSyntaxNodeAction(AnalyzeDocumentation, SyntaxKind.MultiLineDocumentationCommentTrivia);
+        }
+
+        private void AnalyzeDocumentation(SyntaxNodeAnalysisContext context)
+        {
+            DocumentationCommentTriviaSyntax documentation = (DocumentationCommentTriviaSyntax)context.Node;
+
+            foreach (SyntaxNode node in documentation.ChildNodes())
+            {
+                if (node is XmlElementSyntax element)
+                {
+                    CheckXmlElement(context, element);
+                }
+                else if (node is XmlTextSyntax text)
+                {
+                    CheckXmlText(context, text);
+                }
+            }
+        }
+
+        private void CheckXmlElement(SyntaxNodeAnalysisContext context, XmlElementSyntax element)
+        {
+            try
+            {
+                string xmlContent = element.ToString();
+                XElement xElement = XElement.Parse(xmlContent);
+
+                string value = RoslynXmlTools.RemoveDocComments(xmlContent);
+                string normalized = NormalizeText(value);
+                if (value != normalized)
+                {
+                    ReportDiagnostic(context, element, $"Text should be normalized.\nCurrent: '{value}'\nExpected: '{normalized}'");
+                }
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        private void CheckXmlText(SyntaxNodeAnalysisContext context, XmlTextSyntax text)
+        {
+            string content = RoslynXmlTools.RemoveDocComments(string.Concat(text.TextTokens.Select(t => t.Text)));
+            string normalized = NormalizeText(content);
+
+            if (content != normalized)
+            {
+                ReportDiagnostic(context, text, $"Text should be normalized.\nCurrent: '{content}'\nExpected: '{normalized}'");
+            }
+        }
+
+        private string NormalizeText(string text)
+        {
+            // Remove double spaces
+            text = string.Join(" ", text.Split(new[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries));
+
+            // Capitalize first letter of each sentence
+            text = CapitalizeSentences(text);
+
+            // Ensure proper punctuation
+            text = EnsurePunctuation(text);
+
+            return text;
+        }
+
+        private string CapitalizeSentences(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return text;
+            }
+
+            string[] sentences = text.Split(new[] { '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+            StringBuilder result = new();
+
+            foreach (string sentence in sentences)
+            {
+                if (sentence.Length == 0)
+                {
+                    continue;
+                }
+
+                string trimmed = sentence.Trim();
+                if (trimmed.Length == 0)
+                {
+                    continue;
+                }
+
+                char firstChar = char.ToUpper(trimmed[0]);
+                string rest = trimmed.Length > 1 ? trimmed.Substring(1) : string.Empty;
+
+                result.Append(firstChar);
+                result.Append(rest);
+                result.Append(". "); // Add space after punctuation
+            }
+
+            return result.ToString().Trim();
+        }
+
+        private string EnsurePunctuation(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return text;
+            }
+
+            text = text.Trim();
+
+            char lastChar = text[text.Length - 1];
+            if (lastChar != '.' && lastChar != '!' && lastChar != '?')
+            {
+                text += ".";
+            }
+
+            return text;
+        }
+
+        private void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxNode node, string message)
+        {
+            Diagnostic diagnostic = Diagnostic.Create(Rule, node.GetLocation(), message);
+            context.ReportDiagnostic(diagnostic);
+        }
+    }
+}

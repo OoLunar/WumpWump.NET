@@ -1,0 +1,36 @@
+<Project>
+  <!-- Build -->
+  <PropertyGroup>
+    <LangVersion>Latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ProjectRoot>$(MSBuildThisFileDirectory)</ProjectRoot>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <TargetFramework>net9.0</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Version Condition="$(Version) == ''">0.1.0</Version>
+    <Version Condition="$(Nightly) != ''">$(Version)-nightly-$(Nightly)</Version>
+    <Version Condition="$(PullRequest) != ''">$(Version)-pr-$(PullRequest)</Version>
+  </PropertyGroup>
+
+  <!-- Nuget -->
+  <PropertyGroup>
+    <Authors>OoLunar</Authors>
+    <Company>WumpWump.Net Contributors</Company>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/OoLunar/WumpWump.NET</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>discord, discord-api, bots, discord-bots, chat</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/OoLunar/WumpWump.NET</RepositoryUrl>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <!-- Files -->
+  <ItemGroup>
+    <None Include="$(ProjectRoot)/LICENSE" Pack="true" PackagePath="/" />
+    <None Include="$(ProjectRoot)/README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

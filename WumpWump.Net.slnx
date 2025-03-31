@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/examples/">
+    <Project Path="examples/WumpWump.Net.Examples.HelloWorld/WumpWump.Net.Examples.HelloWorld.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/WumpWump.Net.Analyze/WumpWump.Net.Analyze.csproj" />
+    <Project Path="src/WumpWump.Net/WumpWump.Net.csproj" />
+  </Folder>
+  <Project Path="tests/WumpWump.Net.Tests.csproj" />
+</Solution>
