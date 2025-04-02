@@ -35,6 +35,8 @@ namespace WumpWump.Net.Analyze.Entities
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeTypeDeclaration, SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeTypeDeclaration, SyntaxKind.StructDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeTypeDeclaration, SyntaxKind.RecordDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeTypeDeclaration, SyntaxKind.RecordStructDeclaration);
         }
 
         private static void AnalyzeTypeDeclaration(SyntaxNodeAnalysisContext context)
