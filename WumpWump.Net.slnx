@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/WumpWump.Net.Benchmarks.csproj" />
+  </Folder>
   <Folder Name="/examples/">
     <Project Path="examples/WumpWump.Net.Examples.HelloWorld/WumpWump.Net.Examples.HelloWorld.csproj" />
   </Folder>
