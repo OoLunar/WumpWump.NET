@@ -68,7 +68,18 @@ namespace WumpWump.Net.Analyze
                     continue;
                 }
 
-                Diagnostic diagnostic = Diagnostic.Create(Rule, privateKeyword.GetLocation(), member.GetName());
+                // Get the member's identifier
+                SyntaxToken identifier = member switch
+                {
+                    MethodDeclarationSyntax method => method.Identifier,
+                    PropertyDeclarationSyntax property => property.Identifier,
+                    EventDeclarationSyntax eventDecl => eventDecl.Identifier,
+                    FieldDeclarationSyntax field => field.Declaration.Variables.FirstOrDefault()?.Identifier ?? default,
+                    EventFieldDeclarationSyntax eventField => eventField.Declaration.Variables.FirstOrDefault()?.Identifier ?? default,
+                    _ => default
+                };
+
+                Diagnostic diagnostic = Diagnostic.Create(Rule, identifier.GetLocation(), member.GetName());
                 context.ReportDiagnostic(diagnostic);
             }
         }
