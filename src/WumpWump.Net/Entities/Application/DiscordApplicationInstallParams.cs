@@ -10,8 +10,8 @@ namespace WumpWump.Net.Entities
         public required IReadOnlyList<string> Scopes { get; init; }
 
         /// <summary>
-        /// <see cref="DiscordPermissions"/> to request for the bot role
+        /// <a href="https://discord.com/developers/docs/topics/permissions"/> to request for the bot role
         /// </summary>
-        public required DiscordPermissions Permissions { get; init; }
+        public required DiscordPermissionContainer Permissions { get; init; }
     }
 }

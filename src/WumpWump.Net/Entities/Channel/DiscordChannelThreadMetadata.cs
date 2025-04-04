@@ -25,7 +25,7 @@ namespace WumpWump.Net.Entities
         public required DateTimeOffset ArchiveTimestamp { get; init; }
 
         /// <summary>
-        /// whether the thread is locked; when a thread is locked, only users with <see cref="DiscordPermissions.ManageThreads"/> can unarchive it
+        /// whether the thread is locked; when a thread is locked, only users with <see cref="DiscordPermission.ManageThreads"/> can unarchive it
         /// </summary>
         public required bool Locked { get; init; }
 

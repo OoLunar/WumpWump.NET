@@ -16,8 +16,8 @@ namespace WumpWump.Net.Rest
         /// Gateway event.
         /// </summary>
         /// <remarks>
-        /// Requires the <see cref="DiscordPermissions.Speak"/> and <see cref="DiscordPermissions.UseSoundboard"/> permissions, and also
-        /// the <see cref="DiscordPermissions.UseExternalSounds"/> permission if the sound is from a different server. Additionally,
+        /// Requires the <see cref="DiscordPermission.Speak"/> and <see cref="DiscordPermission.UseSoundboard"/> permissions, and also
+        /// the <see cref="DiscordPermission.UseExternalSounds"/> permission if the sound is from a different server. Additionally,
         /// requires the user to be connected to the voice channel, having a voice state without <see cref="DiscordMember.Deaf"/>,
         /// self_deaf, <see cref="DiscordMember.Mute"/>, or suppress enabled.
         /// </remarks>
@@ -48,7 +48,7 @@ namespace WumpWump.Net.Rest
             }, cancellationToken);
 
         /// <summary>
-        /// Returns a list of the guild's soundboard sounds. Includes <see cref="DiscordSoundboardSound.User"/> fields if the bot has the <see cref="DiscordPermissions.CreateGuildExpressions"/> or <see cref="DiscordPermissions.ManageGuildExpressions"/> permission.
+        /// Returns a list of the guild's soundboard sounds. Includes <see cref="DiscordSoundboardSound.User"/> fields if the bot has the <see cref="DiscordPermission.CreateGuildExpressions"/> or <see cref="DiscordPermission.ManageGuildExpressions"/> permission.
         /// </summary>
         /// <param name="guildId">The guild ID to get the soundboard sounds from.</param>
         /// <param name="cancellationToken">The cancellation token to cancel the request.</param>
@@ -61,7 +61,7 @@ namespace WumpWump.Net.Rest
             }, cancellationToken);
 
         /// <summary>
-        /// Returns a soundboard sound object for the given sound id. Includes the <see cref="DiscordSoundboardSound.User"/> field if the bot has the <see cref="DiscordPermissions.CreateGuildExpressions"/> or <see cref="DiscordPermissions.ManageGuildExpressions"/> permission.
+        /// Returns a soundboard sound object for the given sound id. Includes the <see cref="DiscordSoundboardSound.User"/> field if the bot has the <see cref="DiscordPermission.CreateGuildExpressions"/> or <see cref="DiscordPermission.ManageGuildExpressions"/> permission.
         /// </summary>
         /// <param name="guildId">The guild ID to get the soundboard sound from.</param>
         /// <param name="soundId">The sound ID to get the soundboard sound from.</param>
@@ -75,7 +75,7 @@ namespace WumpWump.Net.Rest
             }, cancellationToken);
 
         /// <summary>
-        /// Create a new soundboard sound for the guild. Requires the <see cref="DiscordPermissions.CreateGuildExpressions"/> permission. Returns the new <see cref="DiscordSoundboardSound"/> object on success. Fires a <a href="https://discord.com/developers/docs/events/gateway-events#guild-soundboard-sound-create">Guild Soundboard Sound Create</a> Gateway event.
+        /// Create a new soundboard sound for the guild. Requires the <see cref="DiscordPermission.CreateGuildExpressions"/> permission. Returns the new <see cref="DiscordSoundboardSound"/> object on success. Fires a <a href="https://discord.com/developers/docs/events/gateway-events#guild-soundboard-sound-create">Guild Soundboard Sound Create</a> Gateway event.
         /// </summary>
         /// <remarks>
         /// Soundboard sounds have a max file size of 512kb and a max duration of 5.2 seconds.
@@ -93,8 +93,8 @@ namespace WumpWump.Net.Rest
             }, cancellationToken);
 
         /// <summary>
-        /// Modify the given soundboard sound. For sounds created by the current user, requires either the <see cref="DiscordPermissions.CreateGuildExpressions"/>
-        /// or <see cref="DiscordPermissions.ManageGuildExpressions"/> permission. For other sounds, requires the <see cref="DiscordPermissions.ManageGuildExpressions"/>
+        /// Modify the given soundboard sound. For sounds created by the current user, requires either the <see cref="DiscordPermission.CreateGuildExpressions"/>
+        /// or <see cref="DiscordPermission.ManageGuildExpressions"/> permission. For other sounds, requires the <see cref="DiscordPermission.ManageGuildExpressions"/>
         /// permission. Returns the updated <see cref="DiscordSoundboardSound"/> object on success. Fires a <a href="https://discord.com/developers/docs/resources/soundboard#soundboard-sound-object">Guild Soundboard Sound Update</a> Gateway event.
         /// </summary>
         /// <param name="guildId">The guild ID to modify the soundboard sound in.</param>
@@ -111,8 +111,8 @@ namespace WumpWump.Net.Rest
             }, cancellationToken);
 
         /// <summary>
-        /// Delete the given soundboard sound. For sounds created by the current user, requires either the <see cref="DiscordPermissions.CreateGuildExpressions"/> or <see cref="DiscordPermissions.ManageGuildExpressions"/> permission.
-        /// For other sounds, requires the <see cref="DiscordPermissions.ManageGuildExpressions"/> permission. Returns <see cref="System.Net.HttpStatusCode.NoContent"/> on success. Fires a <a href="https://discord.com/developers/docs/resources/soundboard#soundboard-sound-object">Guild Soundboard Sound Update</a> Gateway event.
+        /// Delete the given soundboard sound. For sounds created by the current user, requires either the <see cref="DiscordPermission.CreateGuildExpressions"/> or <see cref="DiscordPermission.ManageGuildExpressions"/> permission.
+        /// For other sounds, requires the <see cref="DiscordPermission.ManageGuildExpressions"/> permission. Returns <see cref="System.Net.HttpStatusCode.NoContent"/> on success. Fires a <a href="https://discord.com/developers/docs/resources/soundboard#soundboard-sound-object">Guild Soundboard Sound Update</a> Gateway event.
         /// </summary>
         /// <param name="guildId">The guild ID to delete the soundboard sound from.</param>
         /// <param name="soundId">The sound ID to delete.</param>

@@ -19,7 +19,7 @@ namespace WumpWump.Net.Entities
         public required string Name { get; init; }
 
         /// <summary>
-        /// whether this tag can only be added to or removed from threads by a member with the <see cref="DiscordPermissions.ManageThreads"/> permission
+        /// whether this tag can only be added to or removed from threads by a member with the <see cref="DiscordPermission.ManageThreads"/> permission
         /// </summary>
         public required bool Moderated { get; init; }
 

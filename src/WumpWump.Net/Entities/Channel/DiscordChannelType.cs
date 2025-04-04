@@ -43,7 +43,7 @@ namespace WumpWump.Net.Entities
         PublicThread = 11,
 
         /// <summary>
-        /// a temporary sub-channel within a <see cref="GuildText"/> channel that is only viewable by those invited and those with the <see cref="DiscordPermissions.ManageThreads"/> permission
+        /// a temporary sub-channel within a <see cref="GuildText"/> channel that is only viewable by those invited and those with the <see cref="DiscordPermission.ManageThreads"/> permission
         /// </summary>
         PrivateThread = 12,
 

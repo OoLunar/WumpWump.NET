@@ -69,7 +69,7 @@ namespace WumpWump.Net.Entities
         /// <summary>
         /// total permissions of the member in the channel, including overwrites, returned when in the interaction object
         /// </summary>
-        public DiscordOptional<DiscordPermissions> Permissions { get; init; }
+        public DiscordOptional<DiscordPermissionContainer> Permissions { get; init; }
 
         /// <summary>
         /// when the user's <a href="https://support.discord.com/hc/en-us/articles/4413305239191-Time-Out-FAQ">timeout</a> will expire and the user will be able to communicate in the guild again, null or a time in the past if the user is not timed out

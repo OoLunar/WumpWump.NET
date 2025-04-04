@@ -31,7 +31,7 @@ namespace WumpWump.Net.Entities
         public DiscordOptional<DiscordChannelThreadMetadata> ThreadMetadata { get; init; }
         public DiscordOptional<DiscordChannelThreadMember> Member { get; init; }
         public DiscordOptional<DiscordChannelDefaultAutoArchiveDuration> DefaultAutoArchiveDuration { get; init; }
-        public DiscordOptional<DiscordPermissions> Permissions { get; init; }
+        public DiscordOptional<DiscordPermissionContainer> Permissions { get; init; }
         public DiscordOptional<DiscordChannelFlags> Flags { get; init; }
         public DiscordOptional<int> TotalMessageSent { get; init; }
         public DiscordOptional<IReadOnlyList<DiscordChannelForumTag>> AvailableTags { get; init; }
