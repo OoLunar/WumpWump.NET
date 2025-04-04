@@ -7,17 +7,6 @@ namespace WumpWump.Net.Analyze
 {
     public static class Extensions
     {
-        public static bool IsRecord(this BaseTypeDeclarationSyntax typeDeclaration) => typeDeclaration switch
-        {
-            // Standard record class
-            ClassDeclarationSyntax classDecl => classDecl.Modifiers.Any(m => m.IsKind(SyntaxKind.RecordKeyword)),
-            // Record struct
-            StructDeclarationSyntax structDecl => structDecl.Modifiers.Any(m => m.IsKind(SyntaxKind.RecordKeyword)),
-            // Positional record (has parameter list)
-            RecordDeclarationSyntax => true,
-            _ => false
-        };
-
         public static string GetName(this MemberDeclarationSyntax member)
         {
             try

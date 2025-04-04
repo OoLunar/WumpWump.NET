@@ -50,6 +50,41 @@ namespace WumpWump.Net.Entities
         private byte _element0;
 
         public DiscordPermissionContainer(DiscordPermission permission) => SetFlag((int)permission, true);
+        public DiscordPermissionContainer(ulong value)
+        {
+            for (int i = 0; i < sizeof(ulong) * 8; i++)
+            {
+                this[i] = (byte)(value >> (i * 8));
+            }
+        }
+
+#if ENABLE_LARGE_PERMISSIONS
+        public DiscordPermissionContainer(UInt128 value)
+        {
+            for (int i = 0; i < _sizeOfUInt128 * 8; i++)
+            {
+                this[i] = (byte)(value >> (i * 8));
+            }
+        }
+
+        public DiscordPermissionContainer(BigInteger value)
+        {
+            // Check if the number is too large
+            long bitLength = value.GetBitLength();
+            if (bitLength > MAXIMUM_BIT_COUNT)
+            {
+                throw new InvalidOperationException($"Permission bits are too large. Expected less than {MAXIMUM_BIT_COUNT} bits, but got {bitLength} bits.");
+            }
+
+            for (int i = 0; i < bitLength; i++)
+            {
+                if ((value & (BigInteger.One << i)) != 0)
+                {
+                    SetFlag(i, true);
+                }
+            }
+        }
+#endif
 
         public void SetFlag(DiscordPermission permission, bool value) => SetFlag((int)permission, value);
 

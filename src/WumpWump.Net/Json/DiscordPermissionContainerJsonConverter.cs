@@ -1,9 +1,11 @@
 using System;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WumpWump.Net.Entities;
+#if ENABLE_LARGE_PERMISSIONS
+using System.Numerics;
+#endif
 
 namespace WumpWump.Net.Json
 {
@@ -25,58 +27,32 @@ namespace WumpWump.Net.Json
             {
                 return DiscordPermissionContainer.None;
             }
-
             // Try to fast path with ulong
-            DiscordPermissionContainer permissions = DiscordPermissionContainer.None;
-            if (ulong.TryParse(value, out ulong permissionBits))
+            else if (ulong.TryParse(value, out ulong permissionBits))
             {
-                for (int i = 0; i < 64; i++)
-                {
-                    if ((permissionBits & (1UL << i)) != 0)
-                    {
-                        permissions.SetFlag(i, true);
-                    }
-                }
-
-                return permissions;
+                return new DiscordPermissionContainer(permissionBits);
             }
-
+#if ENABLE_LARGE_PERMISSIONS
             // Try to fast path with UInt128 (This will work until like, 2035 when Discord decides to completely break everything)
-            if (UInt128.TryParse(value, out UInt128 permissionBits128) && permissionBits128 <= _maxUInt128ValueForPermissions)
+            else if (UInt128.TryParse(value, out UInt128 permissionBits128) && permissionBits128 <= _maxUInt128ValueForPermissions)
             {
-                for (int i = 0; i < _maxUInt128BitCount; i++)
-                {
-                    if ((permissionBits128 & (UInt128.One << i)) != 0)
-                    {
-                        permissions.SetFlag(i, true);
-                    }
-                }
-
-                return permissions;
+                return new DiscordPermissionContainer(permissionBits128);
             }
-
             // BigInteger it is
-            if (!BigInteger.TryParse(value, out BigInteger permissionBitsBigInt))
+            else if (BigInteger.TryParse(value, out BigInteger permissionBitsBigInt))
             {
-                throw new JsonException($"Failed to parse {value} as a BigInteger");
-            }
-
-            // Check if the number is too large
-            long bitLength = permissionBitsBigInt.GetBitLength();
-            if (bitLength > DiscordPermissionContainer.MAXIMUM_BIT_COUNT)
-            {
-                throw new JsonException($"Permission bits are too large: {value}");
-            }
-
-            for (int i = 0; i < bitLength; i++)
-            {
-                if ((permissionBitsBigInt & (BigInteger.One << i)) != 0)
+                try
                 {
-                    permissions.SetFlag(i, true);
+                    return new DiscordPermissionContainer(permissionBitsBigInt);
+                }
+                catch (InvalidOperationException error)
+                {
+                    throw new JsonException(error.Message);
                 }
             }
+#endif
 
-            return permissions;
+            throw new JsonException($"Failed to parse DiscordPermissionContainer from string, is it larger than {DiscordPermissionContainer.MAXIMUM_BIT_COUNT} bits? Value: {value}");
         }
 
         public override void Write(Utf8JsonWriter writer, DiscordPermissionContainer value, JsonSerializerOptions options)

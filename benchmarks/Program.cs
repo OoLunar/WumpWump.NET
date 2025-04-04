@@ -32,7 +32,7 @@ namespace WumpWump.Net.Benchmarks
             config = config.WithOptions(ConfigOptions.DisableOptimizationsValidator).AddJob(Job.Dry).StopOnFirstError(false);
 #endif
 
-            BenchmarkRunner.Run(types, config, args);
+            BenchmarkRunner.Run(types, config, ["-p:EnableLargePermissions", .. args]);
         }
 
         private static IEnumerable<Type> FindBenchmarkTypes(IEnumerable<Type> types)

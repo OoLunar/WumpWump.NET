@@ -9,9 +9,6 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net/WumpWump.Net.csproj">
-      <!-- This is needed to set DiscordPermissionContainer.MAXIMUM_BIT_COUNT to 256 so we can test both Int128 and BigInteger implementations. -->
-      <AdditionalProperties>DefineConstants=$(DefineConstants)</AdditionalProperties>
-    </ProjectReference>
+    <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net/WumpWump.Net.csproj" AdditionalProperties="EnableLargePermissions=true" />
   </ItemGroup>
 </Project>
