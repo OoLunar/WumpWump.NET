@@ -3,7 +3,6 @@
     <TargetFramework>net9.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <DefineConstants>$(DefineConstants);ENABLE_LARGE_PERMISSIONS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.13.0" />
@@ -15,7 +14,7 @@
     <PackageReference Include="MSTest" Version="3.8.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net/WumpWump.Net.csproj" AdditionalProperties="EnableLargePermissions=true" />
+    <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net/WumpWump.Net.csproj" />
     <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net.Analyze/WumpWump.Net.Analyze.csproj" />
   </ItemGroup>
 </Project>

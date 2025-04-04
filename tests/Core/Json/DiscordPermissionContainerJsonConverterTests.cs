@@ -1,4 +1,3 @@
-using System;
 using System.Numerics;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -47,35 +46,6 @@ namespace WumpWump.Net.Tests.Core.Json
             Assert.IsFalse(result.HasFlag(1));
             Assert.IsTrue(result.HasFlag(2));
             Assert.IsFalse(result.HasFlag(3));
-        }
-
-        [TestMethod]
-        public void ReadValidUInt128ValueParsesCorrectly()
-        {
-            // Arrange
-            string json = $"\"{UInt128.One << 127}\""; // 2^127
-
-            // Act
-            DiscordPermissionContainer result = JsonSerializer.Deserialize<DiscordPermissionContainer>(json, _options);
-
-            // Assert
-            Assert.IsFalse(result.HasFlag(126));
-            Assert.IsTrue(result.HasFlag(127));
-            Assert.IsFalse(result.HasFlag(128));
-        }
-
-        [TestMethod]
-        public void ReadValidBigIntegerValueParsesCorrectly()
-        {
-            // Arrange
-            string json = "\"123456789012345678901234567890\"";
-
-            // Act
-            DiscordPermissionContainer result = JsonSerializer.Deserialize<DiscordPermissionContainer>(json, _options);
-
-            // Assert
-            // Verify some bits are set (exact verification would require knowing the binary representation)
-            Assert.IsTrue(result != default);
         }
 
         [TestMethod]

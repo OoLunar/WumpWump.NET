@@ -1,11 +1,9 @@
 using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WumpWump.Net.Entities;
-#if ENABLE_LARGE_PERMISSIONS
-using System.Numerics;
-#endif
 
 namespace WumpWump.Net.Json
 {
@@ -28,29 +26,10 @@ namespace WumpWump.Net.Json
                 return DiscordPermissionContainer.None;
             }
             // Try to fast path with ulong
-            else if (ulong.TryParse(value, out ulong permissionBits))
+            else if (ulong.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out ulong permissionBits))
             {
                 return new DiscordPermissionContainer(permissionBits);
             }
-#if ENABLE_LARGE_PERMISSIONS
-            // Try to fast path with UInt128 (This will work until like, 2035 when Discord decides to completely break everything)
-            else if (UInt128.TryParse(value, out UInt128 permissionBits128) && permissionBits128 <= _maxUInt128ValueForPermissions)
-            {
-                return new DiscordPermissionContainer(permissionBits128);
-            }
-            // BigInteger it is
-            else if (BigInteger.TryParse(value, out BigInteger permissionBitsBigInt))
-            {
-                try
-                {
-                    return new DiscordPermissionContainer(permissionBitsBigInt);
-                }
-                catch (InvalidOperationException error)
-                {
-                    throw new JsonException(error.Message);
-                }
-            }
-#endif
 
             throw new JsonException($"Failed to parse DiscordPermissionContainer from string, is it larger than {DiscordPermissionContainer.MAXIMUM_BIT_COUNT} bits? Value: {value}");
         }

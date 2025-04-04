@@ -3,12 +3,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <DefineConstants>$(DefineConstants);ENABLE_LARGE_PERMISSIONS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net/WumpWump.Net.csproj" AdditionalProperties="EnableLargePermissions=true" />
+    <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net/WumpWump.Net.csproj" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -23,19 +22,13 @@ namespace WumpWump.Net.Entities
     public partial struct DiscordPermissionContainer
     {
         // Discord uses bits to store permissions, so we need to have a maximum bit count which supports all permissions
-#if ENABLE_LARGE_PERMISSIONS
-        public const int MAXIMUM_BIT_COUNT = 256;
-#else
         public const int MAXIMUM_BIT_COUNT = 64;
-#endif
 
         // >> 3 is equivalent to dividing by 8 (since 2³ = 8)
         public const int MAXIMUM_BYTE_COUNT = (MAXIMUM_BIT_COUNT + 7) >> 3;
 
         public static readonly DiscordPermissionContainer None;
         public static readonly DiscordPermissionContainer All;
-
-        private static readonly int _sizeOfUInt128 = Unsafe.SizeOf<UInt128>();
 
         static DiscordPermissionContainer()
         {
@@ -52,39 +45,11 @@ namespace WumpWump.Net.Entities
         public DiscordPermissionContainer(DiscordPermission permission) => SetFlag((int)permission, true);
         public DiscordPermissionContainer(ulong value)
         {
-            for (int i = 0; i < sizeof(ulong) * 8; i++)
+            for (int i = 0; i < sizeof(ulong); i++)
             {
                 this[i] = (byte)(value >> (i * 8));
             }
         }
-
-#if ENABLE_LARGE_PERMISSIONS
-        public DiscordPermissionContainer(UInt128 value)
-        {
-            for (int i = 0; i < _sizeOfUInt128 * 8; i++)
-            {
-                this[i] = (byte)(value >> (i * 8));
-            }
-        }
-
-        public DiscordPermissionContainer(BigInteger value)
-        {
-            // Check if the number is too large
-            long bitLength = value.GetBitLength();
-            if (bitLength > MAXIMUM_BIT_COUNT)
-            {
-                throw new InvalidOperationException($"Permission bits are too large. Expected less than {MAXIMUM_BIT_COUNT} bits, but got {bitLength} bits.");
-            }
-
-            for (int i = 0; i < bitLength; i++)
-            {
-                if ((value & (BigInteger.One << i)) != 0)
-                {
-                    SetFlag(i, true);
-                }
-            }
-        }
-#endif
 
         public void SetFlag(DiscordPermission permission, bool value) => SetFlag((int)permission, value);
 
@@ -128,57 +93,17 @@ namespace WumpWump.Net.Entities
 
         public override readonly string ToString()
         {
-            // Grab the highest bit set
-            int highestBit = 0;
-            for (int i = MAXIMUM_BIT_COUNT - 1; i >= 0; i--)
+            // If the highest bit is less than 64, we can use a ulong
+            ulong value = 0;
+            for (int i = 0; i < sizeof(ulong) * 8; i++)
             {
                 if (HasFlag(i))
                 {
-                    highestBit = i;
-                    break;
+                    value |= 1ul << i;
                 }
             }
 
-            if (highestBit < sizeof(ulong) * 8)
-            {
-                // If the highest bit is less than 64, we can use a ulong
-                ulong value = 0;
-                for (int i = 0; i <= highestBit; i++)
-                {
-                    if (HasFlag(i))
-                    {
-                        value |= 1ul << i;
-                    }
-                }
-
-                return value.ToString();
-            }
-            else if (highestBit < _sizeOfUInt128 * 8)
-            {
-                // If the highest bit is less than 128, we can use a UInt128
-                UInt128 value = UInt128.Zero;
-                for (int i = 0; i <= highestBit; i++)
-                {
-                    if (HasFlag(i))
-                    {
-                        value |= UInt128.One << i;
-                    }
-                }
-
-                return value.ToString();
-            }
-
-            // Otherwise, we need to use a BigInteger
-            BigInteger bigValue = 0;
-            for (int i = 0; i <= highestBit; i++)
-            {
-                if (HasFlag(i))
-                {
-                    bigValue |= BigInteger.One << i;
-                }
-            }
-
-            return bigValue.ToString();
+            return value.ToString();
         }
 
         public string ToHexString()
@@ -190,6 +115,11 @@ namespace WumpWump.Net.Entities
 
         public readonly string ToPermissionsString()
         {
+            if (this == default)
+            {
+                return "None";
+            }
+
             StringBuilder stringBuilder = new();
             for (int i = 0; i < MAXIMUM_BIT_COUNT; i++)
             {
@@ -203,10 +133,6 @@ namespace WumpWump.Net.Entities
             if (stringBuilder.Length > 0)
             {
                 stringBuilder.Length -= 2; // Remove the last comma and space
-            }
-            else
-            {
-                stringBuilder.Append("None");
             }
 
             return stringBuilder.ToString();
