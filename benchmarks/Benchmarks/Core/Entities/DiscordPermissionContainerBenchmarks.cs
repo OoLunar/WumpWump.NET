@@ -14,11 +14,14 @@ namespace WumpWump.Net.Benchmarks.Benchmarks.Core.Entities
         public IEnumerable<object> ContainerValues()
         {
             yield return new DiscordPermissionContainer(ulong.MinValue);
-            yield return new DiscordPermissionContainer(1024);             // 000000000000000000000000000000000000000010000000000
-            yield return new DiscordPermissionContainer(1116855673222);    // 000000000010000010000001001110010010010000110000110
-            yield return new DiscordPermissionContainer(26398748180536);   // 000000110000000001001110000000000100000000000111000
-            yield return new DiscordPermissionContainer(2222085186636353); // 111111001001111100110000110001101011100101001000001
-            yield return new DiscordPermissionContainer(ulong.MaxValue);
+            yield return new DiscordPermissionContainer(16);                    // 0000000000000000000000000000000000000000000000000000000000010000
+            yield return new DiscordPermissionContainer(1024);                  // 0000000000000000000000000000000000000000000000000000010000000000
+            yield return new DiscordPermissionContainer(4294967296);            // 0000000000000000000000000000000100000000000000000000000000000000
+            yield return new DiscordPermissionContainer(1116855673222);         // 0000000000000000000000010000010000001001110010010010000110000110
+            yield return new DiscordPermissionContainer(26398748180536);        // 0000000000000000000110000000001001110000000000100000000000111000
+            yield return new DiscordPermissionContainer(2222085186636353);      // 0000000000000111111001001111100110000110001101011100101001000001
+            yield return new DiscordPermissionContainer(9223372036854775809);   // 1000000000000000000000000000000000000000000000000000000000000001
+            yield return new DiscordPermissionContainer(ulong.MaxValue);        // 1111111111111111111111111111111111111111111111111111111111111111
         }
 
         [GlobalSetup]

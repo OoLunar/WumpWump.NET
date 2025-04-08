@@ -1,18 +1,13 @@
 using System;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WumpWump.Net.Entities;
 
 namespace WumpWump.Net.Json
 {
-    public class DiscordPermissionContainerJsonConverter : JsonConverter<DiscordPermissionContainer>
+    public sealed class DiscordPermissionContainerJsonConverter : JsonConverter<DiscordPermissionContainer>
     {
-        protected static readonly int _sizeOfUInt128 = Unsafe.SizeOf<UInt128>();
-        protected static readonly int _maxUInt128BitCount = _sizeOfUInt128 * 8;
-        protected static readonly UInt128 _maxUInt128ValueForPermissions = UInt128.MaxValue << Math.Clamp(DiscordPermissionContainer.MAXIMUM_BIT_COUNT, 0, Unsafe.SizeOf<UInt128>());
-
         public override DiscordPermissionContainer Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)

@@ -7,7 +7,7 @@ namespace WumpWump.Net.Entities
     /// Along with the guild-level permissions, Discord also supports permission overwrites that can be
     /// assigned to individual roles or members on a per-channel basis.
     /// </summary>
-    public enum DiscordPermission : uint
+    public enum DiscordPermission : int
     {
         /// <summary>
         /// Allows creation of instant invites
