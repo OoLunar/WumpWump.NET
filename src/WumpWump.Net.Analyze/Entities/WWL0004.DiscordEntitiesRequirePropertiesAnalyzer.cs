@@ -22,7 +22,7 @@ namespace WumpWump.Net.Analyze
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
             customTags: [WellKnownDiagnosticTags.CustomSeverityConfigurable]
@@ -53,7 +53,8 @@ namespace WumpWump.Net.Analyze
                 || propertySymbol.IsStatic
                 || propertySymbol.IsRequired
                 || DiscordEntityUtilities.IsDiscordOptional(propertySymbol.Type)
-                || propertyDecl.ExpressionBody is not null)
+                || propertySymbol.ContainingType.IsAbstract
+                || propertySymbol.ContainingType.Constructors.Length > 0)
             {
                 return;
             }

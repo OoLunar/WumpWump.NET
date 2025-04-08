@@ -47,7 +47,7 @@ namespace WumpWump.Net.Analyze.Entities
             }
 
             INamedTypeSymbol? symbol = context.SemanticModel.GetDeclaredSymbol(typeDeclaration);
-            if (symbol is null || !DiscordEntityUtilities.IsInGatewayEntityNamespace(symbol) || symbol.IsStatic || (symbol.IsReadOnly && symbol.IsRecord && symbol.IsValueType))
+            if (symbol is null || !DiscordEntityUtilities.IsInGatewayEntityNamespace(symbol.ContainingNamespace) || symbol.IsStatic || (symbol.IsReadOnly && symbol.IsRecord && symbol.IsValueType))
             {
                 return;
             }

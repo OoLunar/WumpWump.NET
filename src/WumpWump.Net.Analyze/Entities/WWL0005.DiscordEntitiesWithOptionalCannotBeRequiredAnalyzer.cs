@@ -22,7 +22,7 @@ namespace WumpWump.Net.Analyze
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
             customTags: [WellKnownDiagnosticTags.CustomSeverityConfigurable]

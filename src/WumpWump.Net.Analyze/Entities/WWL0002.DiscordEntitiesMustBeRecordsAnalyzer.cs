@@ -22,7 +22,7 @@ namespace WumpWump.Net.Analyze
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Error, // Make this an error for enforcement
+            DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
             customTags: [WellKnownDiagnosticTags.CustomSeverityConfigurable]
@@ -46,7 +46,7 @@ namespace WumpWump.Net.Analyze
             }
 
             INamedTypeSymbol? symbol = context.SemanticModel.GetDeclaredSymbol(typeDeclaration);
-            if (symbol is null || symbol.IsRecord || symbol.IsStatic || !DiscordEntityUtilities.IsInRestEntityNamespace(symbol))
+            if (symbol is null || symbol.IsRecord || symbol.IsStatic || !DiscordEntityUtilities.IsInRestEntityNamespace(symbol.ContainingNamespace))
             {
                 return;
             }
