@@ -4,7 +4,7 @@ namespace WumpWump.Net.Entities
     /// Users can play soundboard sounds in voice channels, triggering a
     /// <a href="https://discord.com/developers/docs/events/gateway-events#voice-channel-effect-send">Voice Channel Effect Send</a>
     /// Gateway event for users connected to the voice channel.
-    /// <br>
+    /// <br/>
     /// There is a set of
     /// <a href="https://discord.com/developers/docs/resources/soundboard#list-default-soundboard-sounds">default sounds</a>
     /// available to all users. Soundboard sounds can also be <a href="https://discord.com/developers/docs/resources/soundboard#create-guild-soundboard-sound">created in a guild</a>;

@@ -19,7 +19,7 @@ namespace WumpWump.Net.Entities
         public required string Name { get; init; }
 
         /// <summary>
-        /// <a href="https://discord.com/developers/docs/reference#image-formatting"/>Icon hash</a> of the app
+        /// <a href="https://discord.com/developers/docs/reference#image-formatting">Icon hash</a> of the app
         /// </summary>
         public required string? Icon { get; init; }
 
@@ -139,7 +139,7 @@ namespace WumpWump.Net.Entities
         public DiscordOptional<DiscordApplicationEventWebhookStatus?> EventWebhooksStatus { get; init; }
 
         /// <summary>
-        /// List of <a href="https://discord.com/developers/docs/events/webhook-events#event-types"/>Webhook event types</a> the app subscribes to
+        /// List of <a href="https://discord.com/developers/docs/events/webhook-events#event-types">Webhook event types</a> the app subscribes to
         /// </summary>
         public DiscordOptional<IReadOnlyList<string?>> EventWebhooksTypes { get; init; }
 

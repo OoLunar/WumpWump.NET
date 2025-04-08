@@ -21,7 +21,7 @@ namespace WumpWump.Net.Entities
         /// Member is exempt from guild verification requirements
         /// </summary>
         /// <remarks>
-        /// This flag may be applied to the <see cref="EditModels.DiscordMemberEditModel.Flags"/> property.
+        /// This flag may be applied to the <see cref="PostModels.DiscordMemberEditModel.Flags"/> property.
         /// </remarks>
         BypassesVerification = 1 << 2,
 

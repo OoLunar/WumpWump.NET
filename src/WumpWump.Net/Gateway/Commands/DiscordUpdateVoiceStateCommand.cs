@@ -13,7 +13,7 @@ namespace WumpWump.Net.Gateway.Commands
         public required DiscordSnowflake GuildId { get; init; }
 
         /// <summary>
-        /// ID of the voice channel client wants to join (<see cref="null"/> if disconnecting)
+        /// ID of the voice channel client wants to join (<see langword="null"/> if disconnecting)
         /// </summary>
         public required DiscordSnowflake? ChannelId { get; init; }
 

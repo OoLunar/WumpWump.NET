@@ -257,12 +257,12 @@ namespace WumpWump.Net.Entities
         UseSoundboard = 42,
 
         /// <summary>
-        /// Allows for creating emojis, stickers, and soundboard sounds, and editing and deleting those created by the current user. Not yet available to developers, [see changelog](#DOCS_CHANGE_LOG/clarification-on-permission-splits-for-expressions-and-events).
+        /// Allows for creating emojis, stickers, and soundboard sounds, and editing and deleting those created by the current user. Not yet available to developers, <a href="https://discord.com/developers/docs/change-log#clarification-on-permission-splits-for-expressions-and-events">see changelog</a>.
         /// </summary>
         CreateGuildExpressions = 43,
 
         /// <summary>
-        /// Allows for creating scheduled events, and editing and deleting those created by the current user. Not yet available to developers, [see changelog](#DOCS_CHANGE_LOG/clarification-on-permission-splits-for-expressions-and-events).
+        /// Allows for creating scheduled events, and editing and deleting those created by the current user. Not yet available to developers, <a href="https://discord.com/developers/docs/change-log#clarification-on-permission-splits-for-expressions-and-events">see changelog</a>.
         /// </summary>
         /// <remarks>Used on Voice Channels and Stage Channels</remarks>
         CreateEvents = 44,

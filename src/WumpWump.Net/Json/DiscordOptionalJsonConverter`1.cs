@@ -16,10 +16,10 @@ using WumpWump.Net.Entities;
 namespace WumpWump.Net.Json
 {
     /// <summary>
-    /// <see cref="JsonConverter{T}"/> for <see cref="Optional{T}"/>.
-    /// Will throw if the value is <see cref="Optional{T}.Empty"/> when serializing.
+    /// <see cref="JsonConverter{T}"/> for <see cref="DiscordOptional{T}"/>.
+    /// Will throw if the value is <see cref="DiscordOptional{T}.Empty"/> when serializing.
     /// </summary>
-    /// <typeparam name="T"> The type of the value held by the <see cref="Optional{T}"/>. </typeparam>
+    /// <typeparam name="T"> The type of the value held by the <see cref="DiscordOptional{T}"/>. </typeparam>
     public sealed class DiscordOptionalJsonConverter<T> : JsonConverter<DiscordOptional<T>>
     {
         /// <inheritdoc/>
