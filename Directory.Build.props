@@ -18,6 +18,7 @@
     <Authors>OoLunar</Authors>
     <Company>WumpWump.Net Contributors</Company>
     <IncludeSymbols>true</IncludeSymbols>
+    <IsPackable>false</IsPackable>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/OoLunar/WumpWump.NET</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
