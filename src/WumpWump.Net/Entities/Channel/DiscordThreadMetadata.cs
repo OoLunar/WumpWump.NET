@@ -5,7 +5,7 @@ namespace WumpWump.Net.Entities
     /// <summary>
     /// The thread metadata object contains a number of thread-specific channel fields that are not needed by other channel types.
     /// </summary>
-    public record DiscordChannelThreadMetadata
+    public record DiscordThreadMetadata
     {
         /// <summary>
         /// whether the thread is archived
@@ -13,11 +13,11 @@ namespace WumpWump.Net.Entities
         public required bool Archived { get; init; }
 
         /// <summary>
-        /// the thread will stop showing in the channel list after <see cref="DiscordChannelDefaultAutoArchiveDuration"/> minutes of inactivity,
-        /// can be set to: <see cref="DiscordChannelDefaultAutoArchiveDuration.OneHour"/>, <see cref="DiscordChannelDefaultAutoArchiveDuration.OneDay"/>,
-        /// <see cref="DiscordChannelDefaultAutoArchiveDuration.ThreeDays"/>, <see cref="DiscordChannelDefaultAutoArchiveDuration.OneWeek"/>
+        /// the thread will stop showing in the channel list after <see cref="DiscordDefaultAutoArchiveDuration"/> minutes of inactivity,
+        /// can be set to: <see cref="DiscordDefaultAutoArchiveDuration.OneHour"/>, <see cref="DiscordDefaultAutoArchiveDuration.OneDay"/>,
+        /// <see cref="DiscordDefaultAutoArchiveDuration.ThreeDays"/>, <see cref="DiscordDefaultAutoArchiveDuration.OneWeek"/>
         /// </summary>
-        public required DiscordChannelDefaultAutoArchiveDuration AutoArchiveDuration { get; init; }
+        public required DiscordDefaultAutoArchiveDuration AutoArchiveDuration { get; init; }
 
         /// <summary>
         /// timestamp when the thread's archive status was last changed, used for calculating recent activity

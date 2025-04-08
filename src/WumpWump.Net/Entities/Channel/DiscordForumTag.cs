@@ -6,7 +6,7 @@ namespace WumpWump.Net.Entities
     /// <remarks>
     /// When updating a <see cref="DiscordChannelType.GuildForum"/> or a <see cref="DiscordChannelType.GuildMedia"/> channel, tag objects in <see cref="DiscordChannel.AvailableTags"/> only require the name field.
     /// </remarks>
-    public record DiscordChannelForumTag
+    public record DiscordForumTag
     {
         /// <summary>
         /// the id of the tag

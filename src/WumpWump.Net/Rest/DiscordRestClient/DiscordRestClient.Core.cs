@@ -17,8 +17,10 @@ namespace WumpWump.Net.Rest
         protected static readonly JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web)
         {
             TypeInfoResolver = DiscordJsonTypeInfoResolver.Default,
-            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
         };
+
+        static DiscordRestClient() => _jsonSerializerOptions.Converters.Add(new DiscordColorJsonConverter());
 
         protected readonly ILogger<DiscordRestClient> _logger;
         protected readonly IDiscordRateLimiter _rateLimiter;

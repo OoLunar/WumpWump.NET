@@ -1,6 +1,6 @@
 namespace WumpWump.Net.Entities
 {
-    public enum DiscordChannelVideoQualityMode
+    public enum DiscordVideoQualityMode
     {
         /// <summary>
         /// Discord chooses the quality for optimal performance

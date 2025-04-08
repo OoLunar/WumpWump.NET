@@ -5,7 +5,7 @@ namespace WumpWump.Net.Entities
     /// <summary>
     /// A thread member object contains information about a user that has joined a thread.
     /// </summary>
-    public record DiscordChannelThreadMember
+    public record DiscordThreadMember
     {
         /// <summary>
         /// ID of the thread

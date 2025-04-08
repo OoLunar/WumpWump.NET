@@ -3,7 +3,7 @@ namespace WumpWump.Net.Entities
     /// <summary>
     /// An object that specifies the emoji to use as the default way to react to a forum post. Exactly one of <see cref="EmojiId"/> and <see cref="EmojiName"/> must be set.
     /// </summary>
-    public record DiscordChannelDefaultReaction
+    public record DiscordDefaultReaction
     {
         /// <summary>
         /// The id of a guild's custom emoji.

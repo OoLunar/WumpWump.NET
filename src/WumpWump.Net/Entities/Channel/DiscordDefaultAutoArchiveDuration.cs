@@ -1,6 +1,6 @@
 namespace WumpWump.Net.Entities
 {
-    public enum DiscordChannelDefaultAutoArchiveDuration
+    public enum DiscordDefaultAutoArchiveDuration
     {
         OneHour = 60,
         OneDay = 1440,

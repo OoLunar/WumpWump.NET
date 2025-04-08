@@ -1,6 +1,6 @@
 namespace WumpWump.Net.Entities
 {
-    public enum DiscordChannelSortOrderTypes
+    public enum DiscordSortOrderTypes
     {
         /// <summary>
         /// Sort forum posts by activity.

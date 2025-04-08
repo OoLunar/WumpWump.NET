@@ -1,6 +1,6 @@
 namespace WumpWump.Net.Entities
 {
-    public enum DiscordChannelDefaultForumLayoutTypes
+    public enum DiscordForumLayoutTypes
     {
         /// <summary>
         /// No default has been set for forum channel.

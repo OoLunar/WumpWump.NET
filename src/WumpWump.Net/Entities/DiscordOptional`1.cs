@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using WumpWump.Net.Json;
@@ -16,6 +17,7 @@ namespace WumpWump.Net.Entities
     [SuppressMessage("Design", "WWL0002:Type 'DiscordOptional' in 'WumpWump.Net.Entities' namespace must be declared as a record", Justification = "We override the Equals implementation.")]
     [JsonConverter(typeof(DiscordOptionalJsonConverterFactory))]
     [JsonTypeIgnore(JsonIgnoreCondition.WhenWritingDefault)]
+    [DebuggerDisplay("HasValue = {HasValue}, Value = {_value}")]
     public readonly struct DiscordOptional<T> : IDiscordOptional, IEquatable<DiscordOptional<T>>
     {
         /// <summary>

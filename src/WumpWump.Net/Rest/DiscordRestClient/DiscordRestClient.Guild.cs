@@ -66,5 +66,12 @@ namespace WumpWump.Net.Rest
             Route = new Uri("https://discord.com/api/v10/users/@me/guilds/:guild_id"),
             Url = new Uri($"https://discord.com/api/v10/users/@me/guilds/{guildId}"),
         }, cancellationToken);
+
+        public async ValueTask<DiscordApiResponse<DiscordGuild?>> GetGuildAsync(DiscordSnowflake guildId, bool withCounts = false, CancellationToken cancellationToken = default) => await SendAsync<DiscordGuild?>(new()
+        {
+            Method = HttpMethod.Get,
+            Route = new Uri("https://discord.com/api/v10/guilds/:guild_id"),
+            Url = new Uri($"https://discord.com/api/v10/guilds/{guildId}?with_counts={withCounts}"),
+        });
     }
 }
