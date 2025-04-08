@@ -19,7 +19,7 @@
   ],
   "build": {
     "xref": [
-      "https://www.forsaken-borders.net/WumpWump.Net/xrefmap.yml"
+      "https://www.forsaken-borders.net/WumpWump.NET/xrefmap.yml"
     ],
     "xrefService": "https://xref.docs.microsoft.com/query?uid={uid}",
     "content": [
