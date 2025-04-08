@@ -35,7 +35,7 @@ jobs:
         with:
           dotnet-version: 9
       - name: Build Project
-        run: dotnet build
+        run: dotnet build -m:1 # -m1 is needed due to https://github.com/dotnet/sdk/issues/2902
   test-commit:
     name: Test Commit
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
         with:
           dotnet-version: 9
       - name: Test Project
-        run: dotnet test
+        run: dotnet test -m:1
   package-commit:
     name: Package Commit
     runs-on: ubuntu-latest
@@ -69,7 +69,7 @@ jobs:
       - name: Package Project
         run: |
           NIGHTLY=$(printf "%0*d" 6 ${{ github.run_number }})
-          dotnet pack -c Release -o build -p:Nightly="$NIGHTLY"
+          dotnet pack -m:1 -c Release -o build -p:Nightly="$NIGHTLY"
           #dotnet nuget push "build/*" --skip-duplicate -k ${{ secrets.NUGET_ORG_API_KEY }} -s https://api.nuget.org/v3/index.json
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -98,7 +98,7 @@ jobs:
           dotnet-version: 9
       - name: Build Project
         run: |
-          dotnet build
+          dotnet build -m:1
           dotnet tool update -g docfx --prerelease
           docfx docs/docfx.json
       - name: Upload GitHub Pages artifact

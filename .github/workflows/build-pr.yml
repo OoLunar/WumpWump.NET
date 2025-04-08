@@ -39,8 +39,8 @@ jobs:
         with:
           dotnet-version: 9
       - name: Build Project
-        run: dotnet build
-      - name: Build and Package Project
+        run: dotnet build -m:1 # -m1 is needed due to https://github.com/dotnet/sdk/issues/2902
+      - name: Package Project
         run: dotnet pack --include-symbols --include-source -o build -p:PullRequest="${{ github.event.pull_request.number }}"
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -62,4 +62,4 @@ jobs:
         with:
           dotnet-version: 9
       - name: Test Project
-        run: dotnet test
+        run: dotnet test -m:1
