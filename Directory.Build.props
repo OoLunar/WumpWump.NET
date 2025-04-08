@@ -2,6 +2,7 @@
   <!-- Build -->
   <PropertyGroup>
     <LangVersion>Latest</LangVersion>
+    <NoWarn>$(NoWarn);NETSDK1188</NoWarn>
     <Nullable>enable</Nullable>
     <ProjectRoot>$(MSBuildThisFileDirectory)</ProjectRoot>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
