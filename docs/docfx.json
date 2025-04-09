@@ -66,8 +66,8 @@
     "globalMetadata": {
       "_appTitle": "WumpWump.Net",
       "_appName": "WumpWump.Net",
-      "_appFaviconPath": "../images/favicon.ico",
-      "_appLogoPath": "../images/favicon.png",
+      "_appFaviconPath": "../img/logo.ico",
+      "_appLogoPath": "../img/logo.png",
       "_appFooter": "WumpWump.Net"
     },
     "postProcessors": [],
