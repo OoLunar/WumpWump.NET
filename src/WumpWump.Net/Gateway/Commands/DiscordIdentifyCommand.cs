@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using WumpWump.Net.Entities;
 using WumpWump.Net.Gateway.Entities;
 
@@ -41,7 +40,7 @@ namespace WumpWump.Net.Gateway.Commands
         /// <summary>
         /// Used for <a href="https://discord.com/developers/docs/events/gateway#sharding">Guild Sharding</a>.
         /// </summary>
-        public DiscordOptional<IReadOnlyList<int>> Shard { get; init; }
+        public DiscordOptional<DiscordGatewayShardInformation> Shard { get; init; }
 
         /// <summary>
         /// Presence structure for initial presence information.
