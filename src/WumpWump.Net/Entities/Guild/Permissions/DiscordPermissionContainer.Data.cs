@@ -9,6 +9,8 @@ namespace WumpWump.Net.Entities
         /// The maximum amount of flags that this container can hold. As Discord adds more permissions,
         /// this number may change, however the API on the container will (should) not.
         /// </summary>
+        /// TODO: When incrementing this, ensure it's in increments of 32 bits.
+        /// This is due to the cast to uint in the To*String methods.
         public const int MAXIMUM_BIT_COUNT = 64;
 
         /// <summary>
@@ -26,7 +28,7 @@ namespace WumpWump.Net.Entities
             [SuppressMessage("Design", "IDE0051", Justification = "This is a placeholder for the inline array")]
             public byte ElementZero;
 
-            public void SetFlag(int bitIndex, bool value)
+            public bool SetFlag(int bitIndex, bool value)
             {
                 int byteIndex = bitIndex >> 3;
                 int bitPosition = bitIndex & 7;
@@ -34,10 +36,12 @@ namespace WumpWump.Net.Entities
                 if (value)
                 {
                     this[byteIndex] |= (byte)(1 << bitPosition);
+                    return true;
                 }
                 else
                 {
                     this[byteIndex] &= (byte)~(1 << bitPosition);
+                    return false;
                 }
             }
 

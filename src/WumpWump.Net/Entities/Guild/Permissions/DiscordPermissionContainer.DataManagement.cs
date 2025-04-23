@@ -1,7 +1,7 @@
 using System;
-using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace WumpWump.Net.Entities
@@ -87,27 +87,56 @@ namespace WumpWump.Net.Entities
         /// returned span will be reflected in the container. Use this method with caution.
         /// </summary>
         /// <returns>A <see cref="Span{byte}"/> containing the raw data of the container.</returns>
-        public Span<byte> AsSpan() => MemoryMarshal.CreateSpan(ref _data.ElementZero, MAXIMUM_BYTE_COUNT);
+        public Span<byte> AsSpan()
+        {
+            Span<byte> bytes = MemoryMarshal.CreateSpan(ref _data.ElementZero, MAXIMUM_BYTE_COUNT);
+            if (!BitConverter.IsLittleEndian)
+            {
+                bytes.Reverse();
+            }
+
+            return bytes;
+        }
 
         /// <summary>
         /// Stringifies the container into decimal format. This is not the same as the
         /// <see cref="ToPermissionsString"/> method, which will return the names of the permissions.
         /// </summary>
         /// <returns>A string representation of the container in decimal format.</returns>
-        public override readonly string ToString()
+        public override string ToString() => ToString(null, null);
+
+        /// <inheritdoc cref="ulong.ToString(IFormatProvider?)"/>
+        public string ToString(IFormatProvider? formatProvider) => ToString(null, formatProvider);
+
+        /// <inheritdoc cref="ulong.ToString(string?)"/>
+        public string ToString([StringSyntax("NumericFormat")] string? format) => ToString(format, null);
+
+        /// <inheritdoc cref="ulong.ToString(string?, IFormatProvider?)"/>
+        public string ToString([StringSyntax("NumericFormat")] string? format, IFormatProvider? formatProvider)
         {
-            // If the highest bit is less than 64, we can use a ulong
-            // Otherwise use a UInt128, or a BigInteger
-            ulong value = 0;
-            for (int i = 0; i < MAXIMUM_BIT_COUNT; i++)
+            int leadingZeroCount = 0;
+            for (int i = 0; i < MAXIMUM_BYTE_COUNT; i += 4)
             {
-                if (HasFlag(i))
+                int chunkZeroCount = BitOperations.LeadingZeroCount(Unsafe.As<byte, uint>(ref Unsafe.AsRef(ref _data[i])));
+                if (chunkZeroCount != 32)
                 {
-                    value |= 1ul << i;
+                    break;
                 }
+
+                leadingZeroCount += 4;
             }
 
-            return value.ToString();
+            int rangeLength = MAXIMUM_BYTE_COUNT - leadingZeroCount;
+            return rangeLength switch
+            {
+                0 => "0",
+                <= 1 => _data.ElementZero.ToString(format, formatProvider),
+                <= 2 => Unsafe.As<byte, ushort>(ref Unsafe.AsRef(ref _data.ElementZero)).ToString(format, formatProvider),
+                <= 4 => Unsafe.As<byte, uint>(ref Unsafe.AsRef(ref _data.ElementZero)).ToString(format, formatProvider),
+                <= 8 => Unsafe.As<byte, ulong>(ref Unsafe.AsRef(ref _data.ElementZero)).ToString(format, formatProvider),
+                <= 16 => Unsafe.As<byte, UInt128>(ref Unsafe.AsRef(ref _data.ElementZero)).ToString(format, formatProvider),
+                _ => new BigInteger(AsSpan(), true, false).ToString(format, formatProvider)
+            };
         }
 
         /// <summary>
@@ -116,9 +145,14 @@ namespace WumpWump.Net.Entities
         /// <returns>>A hex string representation of the container.</returns>
         public string ToHexString()
         {
-            Span<byte> bytes = AsSpan();
-            bytes.Reverse();
-            return Convert.ToHexString(_data);
+            // We don't call AsSpan here because then we'd reverse the bytes twice, which is redundant.
+            Span<byte> bytes = MemoryMarshal.CreateSpan(ref _data.ElementZero, MAXIMUM_BYTE_COUNT);
+            if (BitConverter.IsLittleEndian)
+            {
+                bytes.Reverse();
+            }
+
+            return Convert.ToHexString(bytes);
         }
 
         /// <summary>
@@ -128,15 +162,31 @@ namespace WumpWump.Net.Entities
         /// <returns>>A string representation of the container.</returns>
         public string ToPermissionsString()
         {
-            ulong value = BinaryPrimitives.ReadUInt64LittleEndian(AsSpan());
-            int totalBitsSet = BitOperations.PopCount(value);
+            int totalBitsSet = 0;
+            for (int i = 0; i < MAXIMUM_BYTE_COUNT - 4; i += 4)
+            {
+                totalBitsSet += BitOperations.PopCount(Unsafe.As<byte, uint>(ref Unsafe.AsRef(ref _data[i])));
+            }
+
             if (totalBitsSet == 0)
             {
                 return "None";
             }
 
+            int leadingZeroCount = 0;
+            for (int i = 0; i < MAXIMUM_BYTE_COUNT - 4; i += 4)
+            {
+                int chunkZeroCount = BitOperations.LeadingZeroCount(Unsafe.As<byte, uint>(ref Unsafe.AsRef(ref _data[i])));
+                if (chunkZeroCount != 32)
+                {
+                    break;
+                }
+
+                leadingZeroCount += 4;
+            }
+
             string[] names = new string[totalBitsSet];
-            for (int i = MAXIMUM_BIT_COUNT - 1 - BitOperations.LeadingZeroCount(value); totalBitsSet > 0; i--)
+            for (int i = MAXIMUM_BIT_COUNT - 1 - leadingZeroCount; totalBitsSet > 0; i--)
             {
                 if (HasFlag(i))
                 {
@@ -172,21 +222,5 @@ namespace WumpWump.Net.Entities
 
         /// <inheritdoc cref="object.Equals(object?)"/>
         public override bool Equals([NotNullWhen(true)] object? obj) => obj is DiscordPermissionContainer other && Equals(other);
-
-        /// <summary>
-        /// Determines whether the specified <see cref="DiscordPermissionContainer"/> is equal to this instance.
-        /// </summary>
-        /// <param name="left">The left <see cref="DiscordPermissionContainer"/> to compare.</param>
-        /// <param name="right">The right <see cref="DiscordPermissionContainer"/> to compare.</param>
-        /// <returns><seec langword="true"/> if the specified <see cref="DiscordPermissionContainer"/> is equal to this instance; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(DiscordPermissionContainer left, DiscordPermissionContainer right) => left.Equals(right);
-
-        /// <summary>
-        /// Determines whether the specified <see cref="DiscordPermissionContainer"/> is not equal to this instance.
-        /// </summary>
-        /// <param name="left">The left <see cref="DiscordPermissionContainer"/> to compare.</param>
-        /// <param name="right">The right <see cref="DiscordPermissionContainer"/> to compare.</param>
-        /// <returns><seec langword="true"/> if the specified <see cref="DiscordPermissionContainer"/> is not equal to this instance; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(DiscordPermissionContainer left, DiscordPermissionContainer right) => !(left == right);
     }
 }

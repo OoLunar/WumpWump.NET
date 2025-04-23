@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Text.Json.Serialization;
 using WumpWump.Net.Json;
 
@@ -37,6 +38,8 @@ namespace WumpWump.Net.Entities
         /// <c>1 << 8</c> will be <see cref="DiscordPermission.Administrator"/>.
         /// </summary>
         private static readonly string[] _enumNames;
+
+        public bool this[int bitIndex] { get => HasFlag(bitIndex); set => SetFlag(bitIndex, value); }
 
         /// <summary>
         /// The actual data member that stores the flags. We wrap around this to provide a
@@ -119,9 +122,33 @@ namespace WumpWump.Net.Entities
         public DiscordPermissionContainer(ulong permissions)
         {
             _data = new DiscordPermissionContainerData();
-            for (int i = 0; i < MAXIMUM_BIT_COUNT; i++)
+            for (int i = 0; i < Math.Min(MAXIMUM_BIT_COUNT, 64); i++)
             {
                 if ((permissions & (1ul << i)) != 0)
+                {
+                    _data.SetFlag(i, true);
+                }
+            }
+        }
+
+        public DiscordPermissionContainer(UInt128 permissions)
+        {
+            _data = new DiscordPermissionContainerData();
+            for (int i = 0; i < Math.Min(MAXIMUM_BIT_COUNT, 128); i++)
+            {
+                if ((permissions & (UInt128.One << i)) != 0)
+                {
+                    _data.SetFlag(i, true);
+                }
+            }
+        }
+
+        public DiscordPermissionContainer(BigInteger permissions)
+        {
+            _data = new DiscordPermissionContainerData();
+            for (int i = 0; i < Math.Min(MAXIMUM_BIT_COUNT, permissions.GetBitLength()); i++)
+            {
+                if ((permissions & (BigInteger.One << i)) != 0)
                 {
                     _data.SetFlag(i, true);
                 }

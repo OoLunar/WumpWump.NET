@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WumpWump.Net.Entities;
 
@@ -178,7 +180,7 @@ namespace WumpWump.Net.Tests.Core.Entities
         }
 
         [TestMethod]
-        public void ToStringReturnsCorrectHexRepresentation()
+        public void ToHexStringReturnsCorrectRepresentation()
         {
             DiscordPermissionContainer container = new(DiscordPermission.CreateInstantInvite);
             Assert.AreEqual("1".PadLeft(DiscordPermissionContainer.MAXIMUM_BYTE_COUNT * 2, '0'), container.ToHexString());  // 00000001 reversed becomes 0100 in hex
@@ -220,6 +222,92 @@ namespace WumpWump.Net.Tests.Core.Entities
             DiscordPermissionContainer container2 = new(DiscordPermission.KickMembers);
 
             Assert.AreNotEqual(container1.GetHashCode(), container2.GetHashCode());
+        }
+
+        [TestMethod]
+        public void ToStringWhenAllPermissionsZeroReturnsZero()
+        {
+            DiscordPermissionContainer container = new();
+            string result = container.ToString();
+            Assert.AreEqual("0", result);
+        }
+
+        [TestMethod]
+        public void ToStringWhenSinglePermissionSetReturnsCorrectNumber()
+        {
+            // Test with the first permission (bit 0)
+            DiscordPermissionContainer container = new((DiscordPermission)0);
+            string result = container.ToString();
+            Assert.AreEqual("1", result); // Assuming bit 0 = 1
+        }
+
+        [TestMethod]
+        public void ToStringWhenTwoPermissionsSetReturnsCorrectNumber()
+        {
+            DiscordPermissionContainer container = new(0, (DiscordPermission)1);
+            string result = container.ToString();
+            Assert.AreEqual("3", result); // Bits 0 and 1 set (1 + 2 = 3)
+        }
+
+        [TestMethod]
+        public void ToStringWhenUInt64MaxValueReturnsCorrectString()
+        {
+            DiscordPermissionContainer container = new(ulong.MaxValue);
+            string result = container.ToString();
+            Assert.AreEqual(ulong.MaxValue.ToString(), result);
+        }
+
+        [TestMethod]
+        public void ToStringWhenUInt128MaxValueReturnsCorrectString()
+        {
+            if (DiscordPermissionContainer.MAXIMUM_BIT_COUNT < 65)
+            {
+                Assert.Inconclusive("Test is not applicable since UInt128 isn't needed yet.");
+            }
+
+            DiscordPermissionContainer container = new(UInt128.MaxValue);
+            string result = container.ToString();
+            Assert.AreEqual(UInt128.MaxValue.ToString(), result);
+        }
+
+        [TestMethod]
+        public void ToStringWhenBigIntegerValueReturnsCorrectString()
+        {
+            if (DiscordPermissionContainer.MAXIMUM_BIT_COUNT < 129)
+            {
+                Assert.Inconclusive("Test is not applicable since BigInteger isn't needed yet.");
+            }
+
+
+            BigInteger bigIntValue = BigInteger.Parse("123456789012345678901234567890");
+            DiscordPermissionContainer container = new(bigIntValue);
+            string result = container.ToString();
+            Assert.AreEqual(bigIntValue.ToString(), result);
+        }
+
+        [TestMethod]
+        public void ToStringWithFormatProviderRespectsCulture()
+        {
+            DiscordPermissionContainer container = new(1234567);
+            CultureInfo culture = new("de-DE"); // German uses '.' as thousand separator
+            string result = container.ToString("N0", culture);
+            Assert.AreEqual("1.234.567", result); // Format depends on culture
+        }
+
+        [TestMethod]
+        public void ToStringWhenAllPermissionsSetReturnsMaxValue()
+        {
+            DiscordPermissionContainer container = DiscordPermissionContainer.All;
+            string result = container.ToString();
+            Assert.IsTrue(BigInteger.Parse(result) > 0); // Should be a very large number
+        }
+
+        [TestMethod]
+        public void ToStringWhenNoPermissionsSetReturnsZero()
+        {
+            DiscordPermissionContainer container = DiscordPermissionContainer.None;
+            string result = container.ToString();
+            Assert.AreEqual("0", result);
         }
     }
 }
