@@ -288,6 +288,11 @@ namespace WumpWump.Net.Tests.Core.Entities
         [TestMethod]
         public void ToStringWithFormatProviderRespectsCulture()
         {
+            if (CultureInfo.CurrentCulture == CultureInfo.InvariantCulture)
+            {
+                Assert.Inconclusive("Test is not applicable since Culture Invariant mode is being used.");
+            }
+
             DiscordPermissionContainer container = new(1234567);
             CultureInfo culture = new("de-DE"); // German uses '.' as thousand separator
             string result = container.ToString("N0", culture);
