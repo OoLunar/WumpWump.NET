@@ -14,7 +14,7 @@ A .NET Discord library aimed for convenience and ease of use.
 - [ ] Compression
 
 ## REST
-- [ ] Rest Entities (60%)
+- [ ] Rest Entities (80%)
 - [ ] Rest Routes (20%)
 
 ### RateLimits

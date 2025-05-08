@@ -7,6 +7,8 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/WumpWump.Net.Analyze/WumpWump.Net.Analyze.csproj" />
+    <Project Path="src/WumpWump.Net.Gateway/WumpWump.Net.Gateway.csproj" />
+    <Project Path="src/WumpWump.Net.Rest/WumpWump.Net.Rest.csproj" />
     <Project Path="src/WumpWump.Net/WumpWump.Net.csproj" />
   </Folder>
   <Project Path="tests/WumpWump.Net.Tests.csproj" />

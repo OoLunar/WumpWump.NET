@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WumpWump.Net.Entities;
+using WumpWump.Net.Rest.Entities;
 
 namespace WumpWump.Net.Tests.Core.Entities
 {

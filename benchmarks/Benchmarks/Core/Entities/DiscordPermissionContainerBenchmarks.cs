@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using BenchmarkDotNet.Attributes;
-using WumpWump.Net.Entities;
+using WumpWump.Net.Rest.Entities;
 
 namespace WumpWump.Net.Benchmarks.Benchmarks.Core.Entities
 {

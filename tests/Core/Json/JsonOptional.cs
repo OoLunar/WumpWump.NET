@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WumpWump.Net.Entities;
-using WumpWump.Net.Json;
+using WumpWump.Net.Rest.Entities;
+using WumpWump.Net.Rest.Json;
 
 namespace WumpWump.Net.Tests.Core.Json
 {

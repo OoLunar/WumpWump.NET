@@ -5,13 +5,13 @@ namespace WumpWump.Net.Analyze.Entities
 {
     public static class DiscordEntityUtilities
     {
-        private const string EntityNamespace = "WumpWump.Net.Entities";
-        private const string GatewayCommandsNamespace = "WumpWump.Net.Gateway.Commands";
-        private const string GatewayEntityNamespace = "WumpWump.Net.Gateway.Entities";
-        private const string GatewayPayloadNamespace = "WumpWump.Net.Gateway.Payloads";
+        public const string EntityNamespace = "WumpWump.Net.Entities";
+        public const string GatewayCommandsNamespace = "WumpWump.Net.Gateway.Commands";
+        public const string GatewayEntityNamespace = "WumpWump.Net.Gateway.Entities";
+        public const string GatewayPayloadNamespace = "WumpWump.Net.Gateway.Payloads";
 
-        private const string DiscordIOptionalType = "WumpWump.Net.Entities.IDiscordOptional";
-        private const string DiscordOptionalType = "WumpWump.Net.Entities.DiscordOptional";
+        public const string DiscordIOptionalType = "WumpWump.Net.Entities.IDiscordOptional";
+        public const string DiscordOptionalType = "WumpWump.Net.Entities.DiscordOptional";
 
         public static bool IsInEntityNamespace(INamespaceSymbol symbol) => IsInRestEntityNamespace(symbol) || IsInGatewayEntityNamespace(symbol);
 

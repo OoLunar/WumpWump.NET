@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
+    <PackageReference Include="OoLunar.AsyncEvents" Version="2.1.0" />
+    <PackageReference Include="ThisAssembly.Git" Version="1.4.3" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" PrivateAssets="all" />
+    <PackageReference Include="ThisAssembly.Project" Version="1.4.3" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net.Rest/WumpWump.Net.Rest.csproj" />
+    <ProjectReference Include="$(ProjectRoot)/src/WumpWump.Net.Analyze/WumpWump.Net.Analyze.csproj" PrivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer" SetTargetFramework="TargetFramework=netstandard2.0" />
+    <ProjectProperty Include="RepositoryUrl" />
+    <ProjectProperty Include="RepositoryCommit" />
+    <ProjectProperty Include="Version" />
+  </ItemGroup>
+</Project>

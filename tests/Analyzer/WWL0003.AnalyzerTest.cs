@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VerifyCS = WumpWump.Net.Tests.Analyze.CSharpCodeFixVerifier<
-    WumpWump.Net.Analyze.Entities.DiscordGatewayEntitiesMustBeReadOnlyRecordStructsAnalyzer,
+    WumpWump.Net.Analyze.Entities.DiscordEntitiesMustBeNamedAppropriatelyAnalyzer,
     Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace WumpWump.Net.Tests.Analyze

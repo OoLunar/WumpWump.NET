@@ -1,6 +1,6 @@
 using System.Text.Json;
 using BenchmarkDotNet.Attributes;
-using WumpWump.Net.Entities;
+using WumpWump.Net.Rest.Entities;
 
 namespace WumpWump.Net.Benchmarks.Benchmarks.Core.Json
 {
