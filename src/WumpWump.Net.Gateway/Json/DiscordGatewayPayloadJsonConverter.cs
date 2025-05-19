@@ -11,8 +11,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using WumpWump.Net.Gateway.Entities;
+using WumpWump.Net.Gateway.Entities.Payloads;
 using WumpWump.Net.Gateway.Events;
-using WumpWump.Net.Gateway.Payloads;
 
 namespace WumpWump.Net.Gateway.Json
 {

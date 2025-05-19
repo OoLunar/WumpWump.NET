@@ -1,8 +1,7 @@
-using WumpWump.Net.Gateway.Entities;
 using WumpWump.Net.Gateway.Events;
 using WumpWump.Net.Rest.Entities;
 
-namespace WumpWump.Net.Gateway.Commands
+namespace WumpWump.Net.Gateway.Entities.Commands
 {
     /// <summary>
     /// Sent when a client wants to join, move, or disconnect from a voice channel.

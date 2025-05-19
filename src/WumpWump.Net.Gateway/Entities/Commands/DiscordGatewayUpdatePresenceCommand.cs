@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using WumpWump.Net.Gateway.Entities;
 using WumpWump.Net.Gateway.Events;
 
-namespace WumpWump.Net.Gateway.Commands
+namespace WumpWump.Net.Gateway.Entities.Commands
 {
     /// <summary>
     /// Sent by the client to indicate a presence or status update.

@@ -4,19 +4,21 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OoLunar.AsyncEvents;
 using WumpWump.Net.Gateway.Entities;
+using WumpWump.Net.Gateway.Entities.Payloads;
 using WumpWump.Net.Gateway.Events.EventArgs;
-using WumpWump.Net.Gateway.Payloads;
 
 namespace WumpWump.Net.Gateway.Events.EventHandlers
 {
     public class DiscordGatewayHeartbeatHandler : IAsyncDisposable
     {
-        protected DiscordGatewayClient? _client;
         protected TimeSpan? _heartbeatInterval;
-        protected ILogger<DiscordGatewayHeartbeatHandler> _logger;
-        protected int _missedHeartbeats;
+        protected DateTime _lastPayloadReceived;
+        protected DateTime _lastHeartbeatReceived;
+        protected DateTime _lastHeartbeatSent;
 
         protected Task? _heartbeatTask;
+        protected DiscordGatewayClient? _client;
+        protected ILogger<DiscordGatewayHeartbeatHandler> _logger;
         protected CancellationTokenSource _cancellationTokenSource = new();
 
         public DiscordGatewayHeartbeatHandler(ILogger<DiscordGatewayHeartbeatHandler> logger)
@@ -47,7 +49,8 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
             }
 
             // Start the heartbeater
-            await _client.SendGatewayPayloadAsync(DiscordGatewayOpCode.Heartbeat, _client.LastSequenceReceived, _client.CancellationToken);
+            await _client.SendGatewayPayloadAsync(DiscordGatewayOpCode.Heartbeat, _client.SessionInformation.LastSequence, _client.CancellationToken);
+            _lastHeartbeatSent = DateTime.Now;
             _heartbeatTask = HeartbeatBackgroundTaskAsync();
         }
 
@@ -72,7 +75,8 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
             await _cancellationTokenSource.CancelAsync();
 
             // Send the heartbeat to Discord
-            await _client.SendGatewayPayloadAsync(DiscordGatewayOpCode.Heartbeat, _client.LastSequenceReceived, _cancellationTokenSource.Token);
+            await _client.SendGatewayPayloadAsync(DiscordGatewayOpCode.Heartbeat, _client.SessionInformation.LastSequence, _cancellationTokenSource.Token);
+            _lastHeartbeatSent = DateTime.Now;
 
             // Start the heartbeater again
             _heartbeatTask.Dispose();
@@ -89,7 +93,13 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
             }
 
             // Reset the missed heartbeats
-            _missedHeartbeats = 0;
+            _lastHeartbeatReceived = DateTime.Now;
+            _client.SetSessionInformation(_client.SessionInformation with
+            {
+                Ping = _lastHeartbeatReceived - _lastHeartbeatSent
+            });
+
+            _logger.LogTrace("Ping: {Ping:N0}ms", _client.SessionInformation.Ping!.Value.TotalMilliseconds);
             return ValueTask.CompletedTask;
         }
 
@@ -98,24 +108,40 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
             => StopAsync(CancellationToken.None);
 
         [AsyncEventHandler]
+        public ValueTask HandleManualReconnectAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayManualReconnectPayload> _, CancellationToken cancellationToken = default)
+            => StopAsync(CancellationToken.None);
+
+        [AsyncEventHandler]
         public ValueTask HandleReconnectAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayReconnectPayload> _, CancellationToken cancellationToken = default)
             => StopAsync(CancellationToken.None);
 
+        [AsyncEventHandler]
+        public ValueTask LastPayloadReceivedAsync(DiscordWebsocketMessageEventArgs _, CancellationToken cancellationToken = default)
+        {
+            // Reset the last payload received time
+            _lastPayloadReceived = DateTime.Now;
+            return ValueTask.CompletedTask;
+        }
+
         public async ValueTask StopAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (_client is null || _heartbeatTask is null)
+            if (_heartbeatTask is null)
             {
-                throw new InvalidOperationException($"{nameof(HandleSessionInvalidatedAsync)} was called before {nameof(HandleHelloAsync)}");
+                return;
             }
 
             // Cancel the heartbeater
+            cancellationToken.ThrowIfCancellationRequested();
             await _cancellationTokenSource.CancelAsync();
 
             // Wait for the heartbeater to finish
             await _heartbeatTask;
             _heartbeatTask.Dispose();
             _heartbeatTask = null;
+            _client?.SetSessionInformation(_client.SessionInformation with
+            {
+                Ping = null
+            });
         }
 
         protected async Task HeartbeatBackgroundTaskAsync()
@@ -140,19 +166,27 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
             {
                 while (await timer.WaitForNextTickAsync(_cancellationTokenSource.Token))
                 {
-                    await _client.SendGatewayPayloadAsync(DiscordGatewayOpCode.Heartbeat, _client.LastSequenceReceived, _cancellationTokenSource.Token);
-                    _missedHeartbeats++;
+                    await _client.SendGatewayPayloadAsync(DiscordGatewayOpCode.Heartbeat, _client.SessionInformation.LastSequence, _cancellationTokenSource.Token);
+                    _lastHeartbeatSent = DateTime.Now;
 
-                    // Since at the time of writing, the current heartbeat is
-                    // at 42.5 seconds (and has been for years), we can generally
-                    // assume that heartbeats will be few and far between,
-                    // giving us plenty of time to execute the async event
-                    // before the next heartbeat is required.
-                    if (_missedHeartbeats > 1)
+                    // Check if the connection zombied by checking if
+                    // Discord has missed more than 1 heartbeat and if
+                    // the last payload was sent more than 1.5 times the
+                    // heartbeat interval ago. In the extremely unlikely
+                    // event that Discord is still sending us payloads
+                    // but not returning our heartbeats, we will not zombify
+                    // since we're still receiving important data.
+                    int missedHeartbeats = (int)((_lastHeartbeatSent - _lastHeartbeatReceived).TotalMilliseconds / _heartbeatInterval.Value.TotalMilliseconds);
+                    if (missedHeartbeats > 1 && _lastPayloadReceived + (_heartbeatInterval.Value / 2) < _lastHeartbeatSent)
                     {
                         try
                         {
-                            await _client.InvokeEventAsync(new DiscordGatewayAsyncEventArgs<DiscordGatewayZombiedPayload>
+                            // Since at the time of writing, the current heartbeat is
+                            // at 42.5 seconds (and has been for years), we can generally
+                            // assume that heartbeats will be few and far between,
+                            // giving us plenty of time to execute the async event
+                            // before the next heartbeat is required.
+                            await _client.EventModule.InvokeAsync(new DiscordGatewayAsyncEventArgs<DiscordGatewayZombiedPayload>
                             {
                                 Client = _client,
                                 Payload = new DiscordGatewayPayload<DiscordGatewayZombiedPayload>()
@@ -160,8 +194,8 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
                                     OpCode = DiscordGatewayOpCode.Dispatch,
                                     Data = new DiscordGatewayZombiedPayload
                                     {
-                                        LastSequenceReceived = _client.LastSequenceReceived,
-                                        MissedHeartbeats = _missedHeartbeats,
+                                        LastSequenceReceived = _client.SessionInformation.LastSequence,
+                                        MissedHeartbeats = missedHeartbeats,
                                     },
                                     EventName = "ZOMBIED",
                                     Sequence = null

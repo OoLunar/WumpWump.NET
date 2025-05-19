@@ -1,6 +1,7 @@
+using System.Text.Json.Serialization;
 using WumpWump.Net.Gateway.Events;
 
-namespace WumpWump.Net.Gateway.Entities
+namespace WumpWump.Net.Gateway.Entities.Commands
 {
     /// <summary>
     /// Used to replay missed events when a disconnected client resumes.
@@ -24,6 +25,7 @@ namespace WumpWump.Net.Gateway.Entities
         /// <summary>
         /// Last sequence number received
         /// </summary>
+        [JsonPropertyName("seq")]
         public required ulong? Sequence { get; init; }
     }
 }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using WumpWump.Net.Gateway.Entities;
 
-namespace WumpWump.Net.Gateway.Payloads
+namespace WumpWump.Net.Gateway.Entities.Payloads
 {
     /// <inheritdoc />
     public record DiscordGatewayPayloadComparer : IComparer<IDiscordGatewayPayload>

@@ -1,22 +1,19 @@
 using System;
+using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OoLunar.AsyncEvents;
-using WumpWump.Net.Gateway.Commands;
 using WumpWump.Net.Gateway.Entities;
+using WumpWump.Net.Gateway.Entities.Commands;
+using WumpWump.Net.Gateway.Entities.Payloads;
 using WumpWump.Net.Gateway.Events.EventArgs;
-using WumpWump.Net.Gateway.Payloads;
 
 namespace WumpWump.Net.Gateway.Events.EventHandlers
 {
     public class DiscordGatewayConnectionHandler
     {
         protected readonly ILogger<DiscordGatewayConnectionHandler> _logger;
-
-        protected ulong? _lastSequenceReceived;
-        protected Uri? _resumeUrl;
-        protected string? _sessionId;
 
         public DiscordGatewayConnectionHandler(ILogger<DiscordGatewayConnectionHandler> logger)
         {
@@ -25,20 +22,16 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
         }
 
         [AsyncEventHandler]
-        public async ValueTask HandleHelloAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayHelloPayload> asyncEventArgs, CancellationToken cancellationToken = default)
+        public static async ValueTask HandleHelloAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayHelloPayload> asyncEventArgs, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (_resumeUrl is null ^ _sessionId is null)
-            {
-                throw new InvalidOperationException("Discord passed invalid data to the client. Either both resume URL and session ID should be null or both should be set.");
-            }
-            else if (_resumeUrl is not null)
+            if (asyncEventArgs.Client.SessionInformation.SessionId is not null)
             {
                 // Resume the session
                 await asyncEventArgs.Client.SendGatewayPayloadAsync(DiscordGatewayOpCode.Resume, new DiscordGatewayResumeCommand()
                 {
-                    SessionId = _sessionId!,
-                    Sequence = _lastSequenceReceived,
+                    SessionId = asyncEventArgs.Client.SessionInformation.SessionId!,
+                    Sequence = asyncEventArgs.Client.SessionInformation.LastSequence,
                     Token = asyncEventArgs.Client.RestClient.RestClientOptions.DiscordToken
                 }, cancellationToken);
             }
@@ -56,7 +49,7 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
         }
 
         [AsyncEventHandler]
-        public ValueTask HandleReadyAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayReadyPayload> asyncEventArgs, CancellationToken cancellationToken = default)
+        public static ValueTask HandleReadyAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayReadyPayload> asyncEventArgs, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (asyncEventArgs.Data is null)
@@ -64,13 +57,17 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
                 throw new InvalidOperationException($"Null data was incorrectly passed to {nameof(HandleReadyAsync)}");
             }
 
-            _resumeUrl = asyncEventArgs.Data.ResumeGatewayUrl;
-            _sessionId = asyncEventArgs.Data.SessionId;
+            asyncEventArgs.Client.SetSessionInformation(asyncEventArgs.Client.SessionInformation with
+            {
+                ResumeUrl = asyncEventArgs.Data.ResumeGatewayUrl,
+                SessionId = asyncEventArgs.Data.SessionId
+            });
+
             return ValueTask.CompletedTask;
         }
 
         [AsyncEventHandler]
-        public ValueTask HandleInvalidSessionAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayInvalidSessionPayload> asyncEventArgs, CancellationToken cancellationToken = default)
+        public static ValueTask HandleInvalidSessionAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayInvalidSessionPayload> asyncEventArgs, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (asyncEventArgs.Data is null)
@@ -78,39 +75,44 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
                 throw new InvalidOperationException($"Null data was incorrectly passed to {nameof(HandleInvalidSessionAsync)}");
             }
 
-            if (_resumeUrl is null || _sessionId is null)
-            {
-                throw new InvalidOperationException($"{nameof(HandleInvalidSessionAsync)} was called before {nameof(HandleReadyAsync)}");
-            }
-
+            WebSocketCloseStatus? closeStatus;
             if (asyncEventArgs.Data.ShouldResume)
             {
                 // Reconnect and resume
-                _lastSequenceReceived = asyncEventArgs.Client.LastSequenceReceived;
-                _ = asyncEventArgs.Client.ReconnectAsync(false, _resumeUrl, CancellationToken.None).AsTask();
+                closeStatus = null;
             }
             else
             {
                 // Reconnect and re-identify
-                _resumeUrl = null;
-                _sessionId = null;
-                _lastSequenceReceived = null;
-                _ = asyncEventArgs.Client.ReconnectAsync(false, CancellationToken.None).AsTask();
+                asyncEventArgs.Client.SetSessionInformation(asyncEventArgs.Client.SessionInformation with
+                {
+                    ResumeUrl = asyncEventArgs.Client.SessionInformation.GatewayInformation.Url,
+                    SessionId = null,
+                    LastSequence = null
+                });
+
+                closeStatus = WebSocketCloseStatus.NormalClosure;
             }
 
+            _ = asyncEventArgs.Client.ReconnectAsync(closeStatus, asyncEventArgs.Client.SessionInformation.ResumeUrl, CancellationToken.None).AsTask();
             return ValueTask.CompletedTask;
         }
 
         [AsyncEventHandler]
-        public async ValueTask HandleReconnectAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayReconnectPayload> asyncEventArgs, CancellationToken cancellationToken = default)
+        public static ValueTask HandleReconnectAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayReconnectPayload> asyncEventArgs, CancellationToken cancellationToken = default)
         {
             // Reconnect and resume
-            _lastSequenceReceived = asyncEventArgs.Client.LastSequenceReceived;
-            await asyncEventArgs.Client.ReconnectAsync(false, _resumeUrl, CancellationToken.None);
+            //asyncEventArgs.Client.SetSessionInformation(asyncEventArgs.Client.SessionInformation with
+            //{
+            //    LastSequence = null
+            //});
+
+            _ = asyncEventArgs.Client.ReconnectAsync(null, asyncEventArgs.Client.SessionInformation.ResumeUrl, CancellationToken.None).AsTask();
+            return ValueTask.CompletedTask;
         }
 
         [AsyncEventHandler]
-        public async ValueTask HandleZombieAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayZombiedPayload> asyncEventArgs, CancellationToken cancellationToken = default)
+        public ValueTask HandleZombieAsync(DiscordGatewayAsyncEventArgs<DiscordGatewayZombiedPayload> asyncEventArgs, CancellationToken cancellationToken = default)
         {
             if (asyncEventArgs.Data is null)
             {
@@ -119,16 +121,11 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
 
             // Try to reconnect nicely the first time. If it fails, force a new connection
             _logger.LogDebug("Our gateway connection to Discord has been zombied. Attempting to reconnect...");
-            _lastSequenceReceived = asyncEventArgs.Client.LastSequenceReceived;
-            if (asyncEventArgs.Data.MissedHeartbeats is < 3)
-            {
-                await asyncEventArgs.Client.ReconnectAsync(false, _resumeUrl, CancellationToken.None);
-            }
-            else
-            {
-                // Force a new connection
-                await asyncEventArgs.Client.ReconnectAsync(true, null, CancellationToken.None);
-            }
+            _ = asyncEventArgs.Client.ReconnectAsync(null, asyncEventArgs.Data.MissedHeartbeats is < 3
+                ? asyncEventArgs.Client.SessionInformation.ResumeUrl
+                : asyncEventArgs.Client.SessionInformation.GatewayInformation.Url,
+            CancellationToken.None).AsTask();
+            return ValueTask.CompletedTask;
         }
     }
 }

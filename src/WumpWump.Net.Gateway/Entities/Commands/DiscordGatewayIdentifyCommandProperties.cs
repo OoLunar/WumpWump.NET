@@ -1,4 +1,4 @@
-namespace WumpWump.Net.Gateway.Commands
+namespace WumpWump.Net.Gateway.Entities.Commands
 {
     public record DiscordGatewayIdentifyCommandProperties
     {

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using WumpWump.Net.Gateway.Entities;
 using WumpWump.Net.Gateway.Events;
 using WumpWump.Net.Rest.Entities;
 
-namespace WumpWump.Net.Gateway.Commands
+namespace WumpWump.Net.Gateway.Entities.Commands
 {
     /// <summary>
     /// Used to request soundboard sounds for a list of guilds. The server will send

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using WumpWump.Net.Gateway.Events;
 using WumpWump.Net.Rest.Entities;
 
-namespace WumpWump.Net.Gateway.Entities
+namespace WumpWump.Net.Gateway.Entities.Payloads
 {
     /// <summary>
     /// The ready event is dispatched when a client has completed the initial handshake with the gateway (for new sessions).

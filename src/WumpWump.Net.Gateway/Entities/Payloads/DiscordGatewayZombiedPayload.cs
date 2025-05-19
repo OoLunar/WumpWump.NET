@@ -1,7 +1,6 @@
-using WumpWump.Net.Gateway.Entities;
 using WumpWump.Net.Gateway.Events;
 
-namespace WumpWump.Net.Gateway.Payloads
+namespace WumpWump.Net.Gateway.Entities.Payloads
 {
     [DiscordGatewayEvent((DiscordGatewayOpCode)(-1), "Zombied")]
     public record DiscordGatewayZombiedPayload

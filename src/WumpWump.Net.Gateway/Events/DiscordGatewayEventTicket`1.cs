@@ -8,7 +8,7 @@ namespace WumpWump.Net.Gateway.Events
         public DiscordGatewayEventTicket(DiscordGatewayOpCode opCode, string? eventName)
         {
             OpCode = opCode;
-            EventName = eventName;
+            EventName = eventName?.ToUpperInvariant();
             EventType = typeof(TPayload);
             CreateGatewayEventArgs = CreateGatewayEventArgsGenericFunction;
         }

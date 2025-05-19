@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using WumpWump.Net.Gateway.Payloads;
+using WumpWump.Net.Gateway.Entities.Payloads;
 
 namespace WumpWump.Net.Gateway.Json
 {

@@ -18,6 +18,7 @@ namespace WumpWump.Net.Rest
                 DiscordToken = discordToken
             });
 
+            services.TryAddKeyedSingleton("WumpWump.Net.Rest", DiscordRestClient.DefaultSerializerOptions);
             services.TryAddSingleton<HttpClient>();
             services.TryAddSingleton<IDiscordRateLimiter, DiscordRateLimiter>();
             services.TryAddSingleton<DiscordRestClient>();

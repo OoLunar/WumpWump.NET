@@ -7,7 +7,7 @@ namespace WumpWump.Net.Gateway.Entities
     {
         /// <inheritdoc cref="IDiscordGatewayPayload.Data"/>
         [JsonPropertyName("d")]
-new T Data { get; init; }
+        new T Data { get; init; }
 
         object? IDiscordGatewayPayload.Data { get => Data; init => Data = (T)value!; }
     }

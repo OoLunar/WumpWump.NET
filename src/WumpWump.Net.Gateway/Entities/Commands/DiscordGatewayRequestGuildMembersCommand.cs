@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using WumpWump.Net.Gateway.Entities;
 using WumpWump.Net.Gateway.Events;
 using WumpWump.Net.Rest.Entities;
 
-namespace WumpWump.Net.Gateway.Commands
+namespace WumpWump.Net.Gateway.Entities.Commands
 {
     /// <summary>
     /// Used to request all members for a guild or a list of guilds. When initially connecting, if you don't have the
