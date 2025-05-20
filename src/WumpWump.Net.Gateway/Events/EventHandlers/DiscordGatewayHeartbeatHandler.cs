@@ -73,13 +73,16 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
             // Reset the heartbeat background task since
             // we're manually sending a heartbeat to Discord
             await _cancellationTokenSource.CancelAsync();
+            if (_heartbeatTask is not null)
+            {
+                await _heartbeatTask;
+            }
 
             // Send the heartbeat to Discord
             await _client.SendGatewayPayloadAsync(DiscordGatewayOpCode.Heartbeat, _client.SessionInformation.LastSequence, _cancellationTokenSource.Token);
             _lastHeartbeatSent = DateTime.Now;
 
             // Start the heartbeater again
-            _heartbeatTask.Dispose();
             _heartbeatTask = HeartbeatBackgroundTaskAsync();
         }
 
@@ -135,9 +138,11 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
             await _cancellationTokenSource.CancelAsync();
 
             // Wait for the heartbeater to finish
-            await _heartbeatTask;
-            _heartbeatTask.Dispose();
-            _heartbeatTask = null;
+            if (_heartbeatTask is not null)
+            {
+                await _heartbeatTask;
+            }
+
             _client?.SetSessionInformation(_client.SessionInformation with
             {
                 Ping = null
@@ -210,6 +215,8 @@ namespace WumpWump.Net.Gateway.Events.EventHandlers
                 }
             }
             catch (OperationCanceledException) { }
+
+            _heartbeatTask = null;
         }
 
         public async ValueTask DisposeAsync()

@@ -51,7 +51,7 @@ namespace WumpWump.Net.Gateway
                 throw new InvalidOperationException("Client is already connected or in the process of connecting.");
             }
 
-            DiscordApiResponse<DiscordGatewayInformation> response = await RestClient.GetGatewayBotInformationAsync(cancellationToken);
+            DiscordApiResponse<DiscordGatewayInformation> response = await RestClient.GetGatewayAsync(cancellationToken);
             response.EnsureSuccess();
 
             SetSessionInformation(new()
@@ -78,13 +78,6 @@ namespace WumpWump.Net.Gateway
             _logger.LogDebug("Connected to Discord Gateway at {Url}", url);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="forceDisconnect">If you're planning on resuming your current session, this MUST be <see cref="true"/>.</param>
-        /// <param name="resumeUrl"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         public async ValueTask ReconnectAsync(WebSocketCloseStatus? webSocketCloseStatus = WebSocketCloseStatus.NormalClosure, Uri? resumeUrl = null, CancellationToken cancellationToken = default)
         {
             if (_cancellationTokenSource.IsCancellationRequested)
@@ -111,7 +104,7 @@ namespace WumpWump.Net.Gateway
             // reasonable assumption since the user can save their
             // session id externally and then call this method on
             // startup in an attempt to resume their session.
-            DiscordGatewayInformation? gatewayInformation = SessionInformation.GatewayInformation ?? (await RestClient.GetGatewayBotInformationAsync(_cancellationTokenSource.Token)).Data;
+            DiscordGatewayInformation? gatewayInformation = SessionInformation.GatewayInformation ?? (await RestClient.GetGatewayAsync(_cancellationTokenSource.Token)).Data;
             SetSessionInformation(SessionInformation with
             {
                 GatewayInformation = gatewayInformation,
@@ -121,12 +114,6 @@ namespace WumpWump.Net.Gateway
             await ConnectAsync(SessionInformation.ResumeUrl, _cancellationTokenSource.Token);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="forceDisconnect">If you're planning on reconnecting and resuming your current session, this MUST be <see cref="true"/>.</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         public async ValueTask DisconnectAsync(WebSocketCloseStatus? webSocketCloseStatus = WebSocketCloseStatus.NormalClosure, CancellationToken cancellationToken = default)
         {
             if (_cancellationTokenSource.IsCancellationRequested)
