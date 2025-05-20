@@ -25,24 +25,26 @@ namespace WumpWump.Net.Rest
 
         public DiscordRestClientOptions RestClientOptions { get; init; }
         protected readonly HttpClient _httpClient;
+        protected readonly IDiscordUrlResolver _urlResolver;
         protected readonly IDiscordRateLimiter _rateLimiter;
         protected readonly ILogger<DiscordRestClient> _logger;
 
-        public DiscordRestClient(string discordToken, HttpClient? httpClient = null, IDiscordRateLimiter? rateLimiter = null, ILogger<DiscordRestClient>? logger = null)
-            : this(new DiscordRestClientOptions() { DiscordToken = discordToken }, httpClient ?? new(), rateLimiter ?? new DiscordRateLimiter(), logger ?? NullLogger<DiscordRestClient>.Instance) { }
+        public DiscordRestClient(string discordToken, HttpClient? httpClient = null, IDiscordUrlResolver? urlResolver = null, IDiscordRateLimiter? rateLimiter = null, ILogger<DiscordRestClient>? logger = null)
+            : this(new DiscordRestClientOptions() { DiscordToken = discordToken }, httpClient ?? new(), urlResolver ?? new DiscordUrlResolver(), rateLimiter ?? new DiscordRateLimiter(), logger ?? NullLogger<DiscordRestClient>.Instance) { }
 
         [ActivatorUtilitiesConstructor]
-        public DiscordRestClient(DiscordRestClientOptions restClientOptions, HttpClient httpClient, IDiscordRateLimiter rateLimiter, ILogger<DiscordRestClient> logger)
+        public DiscordRestClient(DiscordRestClientOptions restClientOptions, HttpClient httpClient, IDiscordUrlResolver urlResolver, IDiscordRateLimiter rateLimiter, ILogger<DiscordRestClient> logger)
         {
             RestClientOptions = restClientOptions ?? throw new ArgumentNullException(nameof(restClientOptions));
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _rateLimiter = rateLimiter ?? throw new ArgumentNullException(nameof(rateLimiter));
+            _urlResolver = urlResolver ?? throw new ArgumentNullException(nameof(urlResolver));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async ValueTask<DiscordApiResponse<T>> SendAsync<T>(DiscordApiRequest request, CancellationToken cancellationToken = default)
         {
-            using HttpRequestMessage httpRequest = new(request.Method, request.Url);
+            using HttpRequestMessage httpRequest = new(request.Endpoint.Method, request.Endpoint.Url);
             foreach (KeyValuePair<string, IEnumerable<string>> header in request.Headers)
             {
                 if (!httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value))

@@ -1,8 +1,8 @@
 using WumpWump.Net.Rest.Entities;
 
-namespace WumpWump.Net.Rest.PostModels
+namespace WumpWump.Net.Rest.JsonParameterModels
 {
-    public class DiscordUserEditModel
+    public class DiscordEditUserParameterModel
     {
         /// <summary>
         /// user's username, if changed may cause the user's discriminator to be randomized.

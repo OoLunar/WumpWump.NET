@@ -20,6 +20,7 @@ namespace WumpWump.Net.Rest
 
             services.TryAddKeyedSingleton("WumpWump.Net.Rest", DiscordRestClient.DefaultSerializerOptions);
             services.TryAddSingleton<HttpClient>();
+            services.TryAddSingleton<IDiscordUrlResolver, DiscordUrlResolver>();
             services.TryAddSingleton<IDiscordRateLimiter, DiscordRateLimiter>();
             services.TryAddSingleton<DiscordRestClient>();
             return services;

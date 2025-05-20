@@ -1,8 +1,8 @@
 using WumpWump.Net.Rest.Entities;
 
-namespace WumpWump.Net.Rest.PostModels
+namespace WumpWump.Net.Rest.JsonParameterModels
 {
-    public class DiscordDmCreateModel
+    public class DiscordCreateDmJsonParameterModel
     {
         /// <summary>
         /// the recipient to open a DM channel with

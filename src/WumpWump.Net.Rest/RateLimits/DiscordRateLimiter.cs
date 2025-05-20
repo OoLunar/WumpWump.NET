@@ -43,10 +43,10 @@ namespace WumpWump.Net.Rest.RateLimits
             return ValueTask.FromResult(new DiscordRateLimitRequestData()
             {
                 Id = apiRequest.Id,
-                Method = apiRequest.Method,
-                Route = apiRequest.Route,
+                Method = apiRequest.Endpoint.Method,
+                Key = apiRequest.Endpoint.EndpointKey,
                 TokenHash = tokenHash,
-                Url = apiRequest.Url
+                Url = apiRequest.Endpoint.Url
             });
         }
 
@@ -63,12 +63,12 @@ namespace WumpWump.Net.Rest.RateLimits
             DiscordRateLimitBucket bucket = GetOrCreateBucket(rateLimitRequestData);
             while (!bucket.TryReserve())
             {
-                _logger.LogWarning("Rate limit reached for {Route}, waiting for reset: {ResetAt}", rateLimitRequestData.Route, DateTimeOffset.Compare(bucket.SharedReset, DateTimeOffset.UtcNow) > 0 ? bucket.SharedReset : bucket.Reset);
+                _logger.LogWarning("Rate limit reached for {Route}, waiting for reset: {ResetAt}", rateLimitRequestData.Key, DateTimeOffset.Compare(bucket.SharedReset, DateTimeOffset.UtcNow) > 0 ? bucket.SharedReset : bucket.Reset);
                 await Task.Delay((int)(bucket.Reset - DateTimeOffset.UtcNow).TotalMilliseconds, cancellationToken);
                 bucket = GetOrCreateBucket(rateLimitRequestData);
             }
 
-            _logger.LogTrace("{Route}: {Reserved} Reserved, {Remaining}/{Limit} Remain", rateLimitRequestData.Route, bucket.Reserved, bucket.Remaining, bucket.Limit);
+            _logger.LogTrace("{Route}: {Reserved} Reserved, {Remaining}/{Limit} Remain", rateLimitRequestData.Key, bucket.Reserved, bucket.Remaining, bucket.Limit);
             return new DiscordRateLimitReservation(globalbucket, bucket);
         }
 
@@ -98,7 +98,7 @@ namespace WumpWump.Net.Rest.RateLimits
 
                 string reset = GetHeader(headers, "X-RateLimit-Reset") ?? throw new InvalidOperationException("Discord did not provide a X-RateLimit-Reset header.");
                 bucket.Reset = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(reset.Replace(".", string.Empty), CultureInfo.InvariantCulture));
-                _logger.LogDebug("Associated bucket {Hash} with {Route}. {Remaining}/{Limit} remaining, resets at {Reset}", bucket.Hash, rateLimitRequestData.Route, bucket.Remaining, bucket.Limit, bucket.Reset);
+                _logger.LogDebug("Associated bucket {Hash} with {Route}. {Remaining}/{Limit} remaining, resets at {Reset}", bucket.Hash, rateLimitRequestData.Key, bucket.Remaining, bucket.Limit, bucket.Reset);
             }
 
             // Test if we've hit the "shared" rate limit.
@@ -124,7 +124,7 @@ namespace WumpWump.Net.Rest.RateLimits
                 {
                     TokenHashCode = tokenHashCode,
                     Hash = "global",
-                    Route = new Uri("https://discord.com/api/v10/"),
+                    Key = "Unknown Bucket",
                     Limit = 50,
                     Remaining = 50,
                     Reset = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(1),
@@ -140,12 +140,12 @@ namespace WumpWump.Net.Rest.RateLimits
 
         protected DiscordRateLimitBucket GetOrCreateBucket(DiscordRateLimitRequestData rateLimitRequestData)
         {
-            if (!_cache.TryGetValue(rateLimitRequestData.Route, out DiscordRateLimitBucket? bucket) || bucket is null)
+            if (!_cache.TryGetValue(rateLimitRequestData.Key, out DiscordRateLimitBucket? bucket) || bucket is null)
             {
                 bucket = new DiscordRateLimitBucket
                 {
                     TokenHashCode = rateLimitRequestData.TokenHash,
-                    Route = rateLimitRequestData.Route,
+                    Key = rateLimitRequestData.Key,
                     Limit = 1,
                     Remaining = 1,
                     Reserved = 0,
@@ -153,8 +153,8 @@ namespace WumpWump.Net.Rest.RateLimits
                     SharedReset = DateTimeOffset.MinValue
                 };
 
-                _logger.LogTrace("Created rate limit bucket for {Route}: {Bucket}", rateLimitRequestData.Route, bucket);
-                _cache.Set(rateLimitRequestData.Route, bucket, bucket.Reset);
+                _logger.LogTrace("Created rate limit bucket for {Route}: {Bucket}", rateLimitRequestData.Key, bucket);
+                _cache.Set(rateLimitRequestData.Key, bucket, bucket.Reset);
             }
 
             return bucket;

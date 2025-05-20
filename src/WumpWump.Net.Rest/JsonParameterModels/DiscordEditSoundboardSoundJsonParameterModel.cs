@@ -1,21 +1,16 @@
 using WumpWump.Net.Rest.Entities;
 
-namespace WumpWump.Net.Rest.PostModels
+namespace WumpWump.Net.Rest.JsonParameterModels
 {
-    public record DiscordSoundboardSoundCreateModel
+    public record DiscordEditSoundboardSoundJsonParameterModel
     {
         /// <summary>
         /// name of the soundboard sound (2-32 characters)
         /// </summary>
-        public required string Name { get; init; }
+        public DiscordOptional<string> Name { get; init; }
 
         /// <summary>
-        /// the mp3 or ogg sound data, base64 encoded, similar to <a href="https://discord.com/developers/docs/reference#image-data">image data</a>
-        /// </summary>
-        public required DiscordUpload Sound { get; init; }
-
-        /// <summary>
-        /// the volume of the soundboard sound, from 0 to 1, defaults to 1
+        /// the volume of the soundboard sound, from 0 to 1
         /// </summary>
         public DiscordOptional<double?> Volume { get; init; }
 

@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using WumpWump.Net.Rest.Entities;
 
-namespace WumpWump.Net.Rest.PostModels
+namespace WumpWump.Net.Rest.JsonParameterModels
 {
     /// <summary>
     /// Only properties that are passed will be updated.
     /// </summary>
-    public class DiscordApplicationEditModel
+    public class DiscordEditApplicationJsonParameterModel
     {
         /// <summary>
         /// Default custom authorization URL for the app, if enabled

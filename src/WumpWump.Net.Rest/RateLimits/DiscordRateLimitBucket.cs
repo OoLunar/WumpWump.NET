@@ -5,7 +5,7 @@ namespace WumpWump.Net.Rest.RateLimits
     public record DiscordRateLimitBucket
     {
         public required int TokenHashCode { get; init; }
-        public required Uri Route { get; init; }
+        public required string Key { get; init; }
         public required int Limit { get; set; }
         public required int Remaining { get; set; }
         public required DateTimeOffset Reset { get; set; }
