@@ -1,4 +1,4 @@
-namespace WumpWump.Net.Rest.Entities.Gateway
+namespace WumpWump.Net.Rest.Entities
 {
     public record DiscordGatewayBotInformation : DiscordGatewayInformation
     {

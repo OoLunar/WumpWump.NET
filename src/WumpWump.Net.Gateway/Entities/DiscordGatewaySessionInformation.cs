@@ -1,5 +1,5 @@
 using System;
-using WumpWump.Net.Rest.Entities.Gateway;
+using WumpWump.Net.Rest.Entities;
 
 namespace WumpWump.Net.Gateway.Entities
 {

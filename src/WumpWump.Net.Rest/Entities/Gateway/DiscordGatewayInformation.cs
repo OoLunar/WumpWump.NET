@@ -1,6 +1,6 @@
 using System;
 
-namespace WumpWump.Net.Rest.Entities.Gateway
+namespace WumpWump.Net.Rest.Entities
 {
     public record DiscordGatewayInformation
     {

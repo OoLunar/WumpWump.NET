@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 
 namespace WumpWump.Net.Rest
 {
@@ -25,8 +24,6 @@ namespace WumpWump.Net.Rest
         public string GetDomain() => _domain;
         public string GetApiPath() => _apiPath;
         public string GetApiVersion() => _apiVersion;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string GetBaseUrl() => $"https://{_domain}/{_apiPath}/{_apiVersion}";
 
         public DiscordApiEndpoint GetEndpoint(DiscordApiEndpointKey key, params ReadOnlySpan<object?> arguments) => new()

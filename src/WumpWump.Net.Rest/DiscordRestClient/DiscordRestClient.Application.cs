@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using WumpWump.Net.Rest.Entities;
-using WumpWump.Net.Rest.Entities.Gateway;
 using WumpWump.Net.Rest.JsonParameterModels;
 using WumpWump.Net.Rest.QueryParameterModels;
 
@@ -63,14 +62,16 @@ namespace WumpWump.Net.Rest
         public async ValueTask<DiscordApiResponse<IReadOnlyList<DiscordEntitlement>>> ListEntitlementsAsync(DiscordSnowflake applicationId, DiscordListEntitlementQueryParameterModel queryParameters, CancellationToken cancellationToken = default) => await SendAsync<IReadOnlyList<DiscordEntitlement>>(new()
         {
             Endpoint = _urlResolver.GetEndpoint(DiscordApiRoutes.ListEntitlements, applicationId)
-                .WithQueryParameter("user_id", queryParameters.UserId)
-                .WithQueryParameter("sku_ids", queryParameters.SkuIds)
-                .WithQueryParameter("before", queryParameters.Before)
-                .WithQueryParameter("after", queryParameters.After)
-                .WithQueryParameter("limit", queryParameters.Limit)
-                .WithQueryParameter("guild_id", queryParameters.GuildId)
-                .WithQueryParameter("exclude_ended", queryParameters.ExcludeEnded)
-                .WithQueryParameter("exclude_deleted", queryParameters.ExcludeDeleted)
+                .WithQueryParameters(
+                    ("user_id", queryParameters.UserId),
+                    ("sku_ids", queryParameters.SkuIds),
+                    ("before", queryParameters.Before),
+                    ("after", queryParameters.After),
+                    ("limit", queryParameters.Limit),
+                    ("guild_id", queryParameters.GuildId),
+                    ("exclude_ended", queryParameters.ExcludeEnded),
+                    ("exclude_deleted", queryParameters.ExcludeDeleted)
+                )
         }, cancellationToken);
 
         public async ValueTask<DiscordApiResponse<DiscordEntitlement>> GetEntitlementAsync(DiscordSnowflake applicationId, DiscordSnowflake entitlementId, CancellationToken cancellationToken = default) => await SendAsync<DiscordEntitlement>(new()
@@ -108,10 +109,12 @@ namespace WumpWump.Net.Rest
         public async ValueTask<DiscordApiResponse<IReadOnlyList<DiscordSubscription>>> ListSkuSubscriptionsAsync(DiscordSnowflake skuId, DiscordListSubscriptionQueryParameterModel queryParameters, CancellationToken cancellationToken = default) => await SendAsync<IReadOnlyList<DiscordSubscription>>(new()
         {
             Endpoint = _urlResolver.GetEndpoint(DiscordApiRoutes.ListSkuSubscriptions, skuId)
-                .WithQueryParameter("before", queryParameters.Before)
-                .WithQueryParameter("after", queryParameters.After)
-                .WithQueryParameter("limit", queryParameters.Limit)
-                .WithQueryParameter("user_id", queryParameters.UserId)
+                .WithQueryParameters(
+                    ("user_id", queryParameters.UserId),
+                    ("before", queryParameters.Before),
+                    ("after", queryParameters.After),
+                    ("limit", queryParameters.Limit)
+                )
         }, cancellationToken);
 
         public async ValueTask<DiscordApiResponse<DiscordSubscription>> GetSkuSubscriptionAsync(DiscordSnowflake skuId, DiscordSnowflake subscriptionId, CancellationToken cancellationToken = default) => await SendAsync<DiscordSubscription>(new()

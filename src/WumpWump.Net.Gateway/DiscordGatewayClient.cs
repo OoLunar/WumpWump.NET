@@ -8,7 +8,7 @@ using WumpWump.Net.Gateway.Entities;
 using WumpWump.Net.Gateway.Entities.Payloads;
 using WumpWump.Net.Gateway.Modules;
 using WumpWump.Net.Rest;
-using WumpWump.Net.Rest.Entities.Gateway;
+using WumpWump.Net.Rest.Entities;
 
 namespace WumpWump.Net.Gateway
 {

@@ -1,14 +1,16 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Text;
 
 namespace WumpWump.Net.Rest
 {
-    public class DiscordApiEndpointKey
+    public record DiscordApiEndpointKey
     {
-        public HttpMethod Method { get; init; }
-        public CompositeFormat Path { get; init; }
-        public CompositeFormat Endpoint { get; init; }
+        public required HttpMethod Method { get; init; }
+        public required CompositeFormat Path { get; init; }
+        public required CompositeFormat Endpoint { get; init; }
 
+        [SetsRequiredMembers]
         public DiscordApiEndpointKey(HttpMethod method, CompositeFormat path, CompositeFormat endpoint)
         {
             Method = method;
